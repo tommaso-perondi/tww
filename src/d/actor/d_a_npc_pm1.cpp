@@ -74,10 +74,17 @@ static BOOL nodeCallBack_Pm(J3DNode* i_node, int i_calc_timing) {
             u16 jointIdx = ((J3DJoint*)i_node)->getJntNo();
             mDoMtx_stack_c::copy(model->getAnmMtx(jointIdx));
             if (jointIdx == actor->getHeadJntNum()) {
+#if VERSION == VERSION_DEMO
+                mDoMtx_stack_c::multVec(&a_att_pos_offst, actor->getAttPos());
+                mDoMtx_stack_c::YrotM(-actor->getHead_y());
+                mDoMtx_stack_c::ZrotM(-actor->getHead_x());
+                mDoMtx_stack_c::multVec(&a_eye_pos_offst, actor->getEyePos());
+#else
                 MTXMultVec(mDoMtx_stack_c::get(), &a_att_pos_offst, actor->getAttPos());
                 mDoMtx_stack_c::YrotM(-actor->getHead_y());
                 mDoMtx_stack_c::ZrotM(-actor->getHead_x());
                 MTXMultVec(mDoMtx_stack_c::get(), &a_eye_pos_offst, actor->getEyePos());
+#endif
             } else if (jointIdx == actor->getBackboneJntNum()) {
                 mDoMtx_stack_c::XrotM(actor->getBackbone_y());
                 mDoMtx_stack_c::ZrotM(actor->getBackbone_x());
@@ -453,11 +460,20 @@ void daNpc_Pm1_c::lookBack() {
 
 /* 00000EA4-00000F24       .text chkAttention__11daNpc_Pm1_cFv */
 bool daNpc_Pm1_c::chkAttention() {
+#if VERSION == VERSION_DEMO
+    dAttention_c& attn = dComIfGp_getAttention();
+    if (attn.LockonTruth()) {
+        return this == (daNpc_Pm1_c*)attn.LockonTarget(0);
+    } else {
+        return this == (daNpc_Pm1_c*)attn.ActionTarget(0);
+    }
+#else
     if (dComIfGp_getAttention().LockonTruth()) {
         return this == (daNpc_Pm1_c*)dComIfGp_getAttention().LockonTarget(0);
     } else {
         return this == (daNpc_Pm1_c*)dComIfGp_getAttention().ActionTarget(0);
     }
+#endif
 }
 
 /* 00000F24-00000F88       .text setAttention__11daNpc_Pm1_cFv */
@@ -678,18 +694,28 @@ u8 daNpc_Pm1_c::demo() {
 
 /* 00001558-000016BC       .text _draw__11daNpc_Pm1_cFv */
 BOOL daNpc_Pm1_c::_draw() {
+#if VERSION == VERSION_DEMO
+    J3DModel* model = (this->mpMorf)->getModel();
+    J3DModelData* model_data = model->getModelData();
+#else
     J3DModelData* model_data;
     J3DModel* model;
 
     model = (this->mpMorf)->getModel();
     model_data = model->getModelData();
+#endif
     g_env_light.settingTevStruct(TEV_TYPE_ACTOR, &current.pos, &tevStr);
     g_env_light.setLightTevColorType(model, &this->tevStr);
     mBtpAnm.entry(model_data, mBtpFrame);
     mpMorf->entryDL();
     mBtpAnm.remove(model_data);
     dNpc_setShadowModel(this->mpModel, model_data, model);
+#if VERSION == VERSION_DEMO
+    cXyz pos;
+    pos.set(current.pos.x, current.pos.y + 150.0f, current.pos.z);
+#else
     cXyz pos(current.pos.x, current.pos.y + 150.0f, current.pos.z);
+#endif
     this->mShadowId = dComIfGd_setRealShadow(mShadowId, 1, this->mpModel, &pos, 800.0f, current.pos.y - mObjAcch.GetGroundH(), NULL);
 
     if (this->mShadowId == 0) {
@@ -700,7 +726,11 @@ BOOL daNpc_Pm1_c::_draw() {
             dComIfG_Bgsp()->GetTriPla(mObjAcch.m_gnd)->GetNP(),
             0,
             1.0,
+#if VERSION == VERSION_DEMO
+            dDlst_shadowControl_c::getSimpleTex()
+#else
             &dDlst_shadowControl_c::mSimpleTexObj
+#endif
         );
     }
     dSnap_RegistFig(DSNAP_TYPE_PM1, this, 1.0f, 1.0f, 1.0f);
@@ -796,6 +826,7 @@ cPhs_State daNpc_Pm1_c::_create() {
         l_HIO.mNo = mDoHIO_createChild("貧乏マギ−", &l_HIO);
     }
     l_HIO.field_0x8 += 1;
+    fopAcM_ct_Demo(this, daNpc_Pm1_c);
     if (fopAcM_entrySolidHeap(this, CheckCreateHeap, a_heap_size_tbl[mType])) {
         fopAcM_SetMtx(this, mpMorf->getModel()->getBaseTRMtx());
         fopAcM_setCullSizeBox((fopAc_ac_c*)this, -50.0, -20.0, -50.0, 50.0, 150.0, 50.0);
@@ -814,7 +845,7 @@ BOOL daNpc_Pm1_c::CreateHeap() {
     J3DModelData* a_mdl_data;
 
     a_mdl_data = (J3DModelData*)dComIfG_getObjectIDRes("Pm", dRes_ID_PM_BDL_PM_e);
-    JUT_ASSERT(DEMO_SELECT(1310, 1319), a_mdl_data != NULL);
+    JUT_ASSERT(DEMO_SELECT(1318, 1319), a_mdl_data != NULL);
     mpMorf = new mDoExt_McaMorf(
         a_mdl_data,
         NULL,
@@ -832,9 +863,9 @@ BOOL daNpc_Pm1_c::CreateHeap() {
     if (mpMorf) {
         if (mpMorf->getModel()) {
             m_head_jnt_num = a_mdl_data->getJointName()->getIndex("head");
-            JUT_ASSERT(DEMO_SELECT(1329, 1338), m_head_jnt_num >= 0);
+            JUT_ASSERT(DEMO_SELECT(1337, 1338), m_head_jnt_num >= 0);
             m_backbone_jnt_num = a_mdl_data->getJointName()->getIndex("backbone");
-            JUT_ASSERT(DEMO_SELECT(1331, 1340), m_backbone_jnt_num >= 0);
+            JUT_ASSERT(DEMO_SELECT(1339, 1340), m_backbone_jnt_num >= 0);
             mTexPatternNum = a_tex_pattern_num_tbl[mType];
             if (initTexPatternAnm(false) != 0) {
                 mpModel = mDoExt_J3DModel__create(a_mdl_data, 0x20000, 0x11020203);

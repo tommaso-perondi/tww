@@ -20,10 +20,17 @@ public:
 
     s8 getHeadJntNum() { return m_head_jnt_num; }
     s8 getBackboneJntNum()  {return m_backbone_jnt_num; }
+#if VERSION == VERSION_DEMO
+    s16 getBackbone_x() { return m_jnt.mAngles[1][0]; }
+    s16 getBackbone_y() { return m_jnt.mAngles[1][1]; }
+    s16 getHead_x() { return m_jnt.mAngles[0][0]; }
+    s16 getHead_y() { return m_jnt.mAngles[0][1]; }
+#else
     s16 getBackbone_x() { return m_jnt.getBackbone_x(); }
     s16 getBackbone_y() { return m_jnt.getBackbone_y(); }
     s16 getHead_x() { return m_jnt.getHead_x(); }
     s16 getHead_y() { return m_jnt.getHead_y(); }
+#endif
     Vec* getAttPos() { return &mAttPos; }
     Vec* getEyePos() { return &mEyePos; }
 
