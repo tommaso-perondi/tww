@@ -18,7 +18,7 @@ class dMenu_save_c;
 class dMenu_Item_c : public dMenu_base_c {
 public:
     void alphaChange(fopMsgM_pane_class*, f32) {}
-    virtual void draw() {}
+    virtual void draw() {_draw();}
     u8 getItemMode() { return mItemMode; }
     u8 getNowItem() { return mNowItem; }
     void setNowItem(u8 val) { mNowItem = val; }
