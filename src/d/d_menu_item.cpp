@@ -5,6 +5,9 @@
 
 #include "d/dolzel.h" // IWYU pragma: keep
 #include "d/d_menu_item.h"
+#include "JSystem/J2DGraph/J2DWindow.h"
+#include "d/d_meter.h"
+#include "m_Do/m_Do_controller_pad.h"
 
 dMi_HIO_c g_miHIO;
 
@@ -59,7 +62,39 @@ dMi_HIO_c::dMi_HIO_c() {
 
 /* 801C7C7C-801C7DC4       .text initialize__12dMenu_Item_cFv */
 void dMenu_Item_c::initialize() {
-    /* Nonmatching */
+    itemBitCheck(true);
+    mTimer = 0;
+    m858.mUserArea = 10;
+    mA18[0].mUserArea = 0;
+    m2422 = 0;
+    noteInit();
+    outFontInit();
+    checkMove();
+    itemNumberSet();
+    m970.mInitAlpha = g_miHIO.field_0x5C;
+    m23FA[0] = 0;
+    m23FA[1] = 0;
+    J2DWindow* window = (J2DWindow*)m14D0.pane;
+    color_0x2320.r = window->mColorTL.r;
+    color_0x2320.g = window->mColorTL.g;
+    color_0x2320.b = window->mColorTL.b;
+    color_0x2320.a = window->mColorTL.a;
+    color_0x2324.r = window->mColorTR.r;
+    color_0x2324.g = window->mColorTR.g;
+    color_0x2324.b = window->mColorTR.b;
+    color_0x2324.a = window->mColorTR.a;
+    color_0x2328.r = window->mColorBL.r;
+    color_0x2328.g = window->mColorBL.g;
+    color_0x2328.b = window->mColorBL.b;
+    color_0x2328.a = window->mColorBL.a;
+    color_0x232C.r = window->mColorBR.r;
+    color_0x232C.g = window->mColorBR.g;
+    color_0x232C.b = window->mColorBR.b;
+    color_0x232C.a = window->mColorBR.a;
+    m2DPane->insertChild(m1460.pane, mA18[3].pane);
+    m2DPane->insertChild(mA18[3].pane, mA18[2].pane);
+    m2DPane->insertChild(mA18[2].pane, mA18[1].pane);
+    m2DPane->insertChild(mA18[1].pane, mA18[0].pane);
 }
 
 /* 801C7DC4-801C8724       .text screenSet__12dMenu_Item_cFv */
@@ -114,7 +149,34 @@ void dMenu_Item_c::subWindowInit() {
 
 /* 801CAA04-801CAB48       .text subWindowDelete__12dMenu_Item_cFv */
 void dMenu_Item_c::subWindowDelete() {
-    /* Nonmatching */
+    (this->m858).mUserArea = 0;
+    if (this->m2400[5] == 0) {
+        this->mNowItem = fopMsgM_itemNum(dItemNo_SPOILS_BAG_e);
+    } else if (this->m2400[5] == 1) {
+        this->mNowItem = fopMsgM_itemNum(dItemNo_BAIT_BAG_e);
+    } else {
+        this->mNowItem = fopMsgM_itemNum(dItemNo_DELIVERY_BAG_e);
+    }
+    itemnameSet();
+    itemScale();
+    dMeter_subWinFlagOff();
+
+    for (int i = 0; i < 8; i++) {
+        fopMsgM_setNowAlphaZero(&mAF8[i]);
+        fopMsgM_setNowAlphaZero(&mCB8[i]);
+        fopMsgM_setNowAlphaZero(&mE78[i]);
+        fopMsgM_setNowAlphaZero(&m1070[i]);
+    }
+    fopMsgM_setNowAlphaZero(&m1038);
+    fopMsgM_setNowAlphaZero(&m1230);
+    for (int i = 0; i < 9; i++) {
+        fopMsgM_setNowAlphaZero(&m1268[i]);
+    }
+    fopMsgM_setNowAlphaZero(&this->m1460);
+    this->m2DPane->insertChild(this->m1460.pane, this->mA18[3].pane);
+    this->m2DPane->insertChild(this->mA18[3].pane, this->mA18[2].pane);
+    this->m2DPane->insertChild(this->mA18[2].pane, this->mA18[1].pane);
+    this->m2DPane->insertChild(this->mA18[1].pane, this->mA18[0].pane);
 }
 
 /* 801CAB48-801CB020       .text subItemDecide__12dMenu_Item_cFv */
@@ -139,48 +201,195 @@ void dMenu_Item_c::itemnoteSet() {
 
 /* 801CBEBC-801CBF44       .text outFontInit__12dMenu_Item_cFv */
 void dMenu_Item_c::outFontInit() {
-    /* Nonmatching */
+    J2DPane* piVar1;
+
+    for (int i = 0; i < 15; i++) {
+        this->m0B0[i].mUserArea = -1;
+        piVar1 = m0B0[i].pane;
+        piVar1->mRotation = 0.0f;
+        piVar1->calcMtx();
+        fopMsgM_setNowAlphaZero(&m0B0[i]);
+    }
 }
 
 /* 801CBF44-801CC030       .text outFontMove__12dMenu_Item_cFv */
 void dMenu_Item_c::outFontMove() {
-    /* Nonmatching */
+    for (int i = 0; i < 15; i++) {
+        if (this->m0B0[i].mUserArea != -1) {
+            m3F8[i].mPosTopLeft.x = m0B0[i].mPosTopLeft.x + (m778.mPosTopLeft.x + (m820.mPosTopLeft.x + m7B0.mPosTopLeft.x));
+            m3F8[i].mPosTopLeft.y = m0B0[i].mPosTopLeft.y + (m778.mPosTopLeft.y + (m820.mPosTopLeft.y + m7B0.mPosTopLeft.y));
+            f32 y = m820.mPosCenter.y - m3F8[i].mPosTopLeft.y;
+            m3F8[i].pane->rotate(m820.mPosCenter.x - m3F8[i].mPosTopLeft.x, y, ROTATE_Z, m820.pane->mRotation);
+        } else {
+            fopMsgM_setNowAlphaZero(&this->m0B0[i]);
+        }
+    }
 }
 
 /* 801CC030-801CC0F8       .text outFontDraw__12dMenu_Item_cFv */
 void dMenu_Item_c::outFontDraw() {
-    /* Nonmatching */
+    for (int i = 0; i < 15; i++) {
+        if (this->m0B0[i].mUserArea != -1) {
+            this->m0B0[i].mNowAlpha = (this->m778).pane->mAlpha;
+            fopMsgM_outFontDraw2(
+                (J2DPicture*)this->m0B0[i].pane,
+                (J2DPicture*)this->m3F8[i].pane,
+                this->m3F8[i].mPosTopLeft.x,
+                this->m3F8[i].mPosTopLeft.y,
+                g_msgHIO.field_0x70,
+                g_msgHIO.field_0x70,
+                &this->m0B0[i].mUserArea,
+                this->m0B0[i].mNowAlpha,
+                this->m0B0[i].mPosTopLeftOrig.y
+            );
+        } else {
+            fopMsgM_setAlpha(&this->m0B0[i]);
+        }
+    }
 }
 
 /* 801CC0F8-801CC10C       .text noteCheck__12dMenu_Item_cFv */
 u8 dMenu_Item_c::noteCheck() {
-    /* Nonmatching */
-    return 0;
+    return (this->m7E8).mUserArea == 1;
 }
 
 /* 801CC10C-801CC1AC       .text noteInit__12dMenu_Item_cFv */
 void dMenu_Item_c::noteInit() {
-    /* Nonmatching */
+    m7E8.mUserArea = 0;
+    m7B0.mUserArea = 0;
+    f32 half = 0.5f;
+    m820.pane->rotate(m820.mSizeOrig.x * half, m820.mSizeOrig.y * half, ROTATE_Z, m820.mUserArea);
+    fopMsgM_paneTrans(&m820, 0.0f, 0.0f);
 }
 
 /* 801CC1AC-801CC278       .text noteAppear__12dMenu_Item_cFv */
 void dMenu_Item_c::noteAppear() {
-    /* Nonmatching */
+    s16 sum = g_miHIO.field_0x38 + g_miHIO.field_0x3A;
+    if (m7E8.mUserArea == 1) {
+        if (m7B0.mUserArea <= sum) {
+            noteOpen();
+        } else if (m7B0.mUserArea > sum + 1) {
+            noteClose();
+        } else {
+            u8 alpha = g_miHIO.field_0x5C;
+            m970.mNowAlpha = alpha;
+            m970.mInitAlpha = alpha;
+            if (CPad_CHECK_TRIG_A(0) || CPad_CHECK_TRIG_B(0)) {
+                m7B0.mUserArea = m7B0.mUserArea + 1;
+                JAIZelBasic::zel_basic->seStart(0x816, (cXyz*)0x0, 0, 0, 1.0f, 1.0f, -1.0f, -1.0f, 0);
+            }
+        }
+    }
 }
 
 /* 801CC278-801CC4F8       .text noteOpen__12dMenu_Item_cFv */
 void dMenu_Item_c::noteOpen() {
     /* Nonmatching */
+    f32 fVar1;
+    f32 dVar11;
+
+    int iVar9 = g_miHIO.field_0x30;
+    int iVar10 = (s16)(g_miHIO.field_0x38 + g_miHIO.field_0x3A);
+    f32 dx = (f32)g_miHIO.field_0x40 - (this->m820).mPosCenterOrig.x;
+    f32 dy = (f32)g_miHIO.field_0x42 - (this->m820).mPosCenterOrig.y;
+    fVar1 = 1.0f - fopMsgM_valueIncrease(iVar10, iVar10 - (this->m7B0).mUserArea, 0);
+    if ((this->m7B0).mUserArea >= iVar10) {
+        fopMsgM_setInitAlpha(&this->m970);
+        fopMsgM_setInitAlpha(&this->m740);
+        fopMsgM_setInitAlpha(&this->m778);
+        JAIZelBasic::zel_basic->seStart(0x814, (cXyz*)0x0, 0, 0, 1.0f, 1.0f, -1.0f, -1.0f, 0);
+    } else {
+        fopMsgM_setNowAlpha(&this->m970, fVar1);
+        fopMsgM_setNowAlpha(&this->m740, fVar1);
+        fopMsgM_setNowAlpha(&this->m778, fVar1);
+    }
+    f32 half = 0.5f;
+    this->m820.pane
+        ->rotate((this->m820).mSize.x * half, (this->m820).mSize.y * half, ROTATE_Z, (this->m820).mUserArea + fVar1 * (iVar9 - (this->m820).mUserArea));
+    iVar9 = (this->m7B0).mUserArea;
+    if (iVar9 < g_miHIO.field_0x38) {
+        fVar1 = (g_miHIO.field_0x08 * iVar9) / g_miHIO.field_0x38;
+    } else {
+        fVar1 = 1.0f - g_miHIO.field_0x08;
+        dVar11 = fopMsgM_valueIncrease(g_miHIO.field_0x3A, iVar10 - iVar9, 0);
+        dVar11 = fVar1 * (1.0f - dVar11);
+        fVar1 = g_miHIO.field_0x08 + dVar11;
+    }
+    fopMsgM_paneTrans(&this->m820, dx * fVar1, dy * fVar1);
+    (this->m7B0).mUserArea++;
 }
 
 /* 801CC4F8-801CC7D4       .text noteClose__12dMenu_Item_cFv */
 void dMenu_Item_c::noteClose() {
     /* Nonmatching */
+    s16 sVar3 = g_miHIO.field_0x30;
+    s16 sVar7 = g_miHIO.field_0x44;
+    int sum = (s16)(g_miHIO.field_0x38 + g_miHIO.field_0x3A);
+    s16 sVar6 = g_miHIO.field_0x3C;
+    f32 x = g_miHIO.field_0x40;
+    f32 y = g_miHIO.field_0x42;
+    f32 ddx = 2.0f * x - (this->m820).mPosCenterOrig.x - x;
+    f32 ddy = 2.0f * y - (this->m820).mPosCenterOrig.y - y;
+    f32 dx = x - (this->m820).mPosCenterOrig.x;
+    f32 dy = y - (this->m820).mPosCenterOrig.y;
+    f32 ratio = fopMsgM_valueIncrease(sVar6, (this->m7B0).mUserArea - (sum + 1), 0);
+    fopMsgM_paneTrans(&this->m820, dx + ddx * ratio, dy + ddy * ratio);
+    f32 half = 0.5f;
+    this->m820.pane->rotate((this->m820).mSize.x * half, (this->m820).mSize.y * half, ROTATE_Z, sVar3 + ratio * (sVar7 - sVar3));
+    (this->m7B0).mUserArea = (this->m7B0).mUserArea + 1;
+    if ((this->m7B0).mUserArea > (s16)(sum + sVar6 + 1)) {
+        fopMsgM_setInitAlpha(&this->m7B0);
+        fopMsgM_setInitAlpha(&this->m7E8);
+        fopMsgM_setInitAlpha(&this->m820);
+        fopMsgM_setNowAlphaZero(&this->m970);
+        fopMsgM_setNowAlphaZero(&this->m740);
+        fopMsgM_setNowAlphaZero(&this->m778);
+        (this->m7E8).mUserArea = 0;
+        (this->m7B0).mUserArea = 0;
+        this->m820.pane->rotate((this->m820).mSize.x * half, (this->m820).mSize.y * half, ROTATE_Z, (this->m820).mUserArea);
+        fopMsgM_paneTrans(&this->m820, 0.0f, 0.0f);
+    } else {
+        fopMsgM_setNowAlpha(&this->m7B0, ratio = 1.0f - ratio);
+        fopMsgM_setNowAlpha(&this->m7E8, ratio);
+        fopMsgM_setNowAlpha(&this->m820, ratio);
+        fopMsgM_setNowAlpha(&this->m970, ratio);
+        fopMsgM_setNowAlpha(&this->m740, ratio);
+        fopMsgM_setNowAlpha(&this->m778, ratio);
+    }
 }
 
 /* 801CC7D4-801CC9D8       .text mainTrans__12dMenu_Item_cFff */
-void dMenu_Item_c::mainTrans(float, float) {
-    /* Nonmatching */
+void dMenu_Item_c::mainTrans(float x, float y) {
+    fopMsgM_paneTrans(&m1498, x, y);
+    fopMsgM_paneTrans(&m14D0, x, y);
+    fopMsgM_paneTrans(&m1508, x, y);
+    fopMsgM_paneTrans(&m1540, x, y);
+    fopMsgM_paneTrans(&m1578, x, y);
+    fopMsgM_paneTrans(&m15B0, x, y);
+    fopMsgM_paneTrans(&m15E8, x, y);
+    fopMsgM_paneTrans(&m1620, x, y);
+    for (int i = 0; i < 21; i++) {
+        fopMsgM_paneTrans(&m1658[i], x, y);
+        fopMsgM_paneTrans(&m1AF0[i], x, y);
+    }
+    for (int i = 0; i < 3; i++) {
+        fopMsgM_paneTrans(&(&m1F88)[i], x, y);
+    }
+    for (int i = 0; i < 6; i++) {
+        fopMsgM_paneTrans(&m20D8[i], x, y);
+    }
+    fopMsgM_paneTrans(&m2228, x, y);
+    fopMsgM_paneTrans(&m2260, x, y);
+    fopMsgM_paneTrans(&m2298, x, y);
+    fopMsgM_paneTrans(&m22D0, x, y);
+    for (int i = 0; i < 4; i++) {
+        fopMsgM_paneTrans(&mA18[i], x, y);
+    }
+    for (int i = 0; i < 3; i++) {
+        if (dComIfGp_getSelectItem(i) != 0xFF) {
+            fopMsgM_paneTrans(&(&m2030)[i], x, y);
+        }
+    }
 }
 
 /* 801CC9D8-801CC9FC       .text titleTrans__12dMenu_Item_cFff */
