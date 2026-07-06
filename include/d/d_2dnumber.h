@@ -83,7 +83,10 @@ public:
 
 class dDlst_2DOutFont_c {
 public:
-    void setLeftUpPos(f32, f32) {}
+    void setLeftUpPos(f32 x, f32 y) {
+        mLeftUpPosX = x;
+        mLeftUpPosY = y;
+    }
     
     void initial();
     void setPane(JUTFont*, fopMsgM_pane_class*, fopMsgM_pane_class*, fopMsgM_pane_class*, fopMsgM_pane_class*);
@@ -107,6 +110,9 @@ public:
     /* 0x18 */ J2DPane* m18;
     /* 0x1C */ u8 m1C[0x20 - 0x1C];
     /* 0x20 */ JUTFont* m20;
+    /* 0x24 */ u8 m24[0x30 - 0x24];
+    /* 0x30 */ f32 mLeftUpPosX;
+    /* 0x34 */ f32 mLeftUpPosY;
 };
 
 #endif /* D_2DNUMBER_H */

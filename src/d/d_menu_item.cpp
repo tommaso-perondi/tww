@@ -6,6 +6,7 @@
 #include "d/dolzel.h" // IWYU pragma: keep
 #include "d/d_menu_item.h"
 #include "JSystem/J2DGraph/J2DWindow.h"
+#include "d/d_2dnumber.h"
 #include "d/d_meter.h"
 #include "m_Do/m_Do_controller_pad.h"
 
@@ -123,7 +124,7 @@ void dMenu_Item_c::checkMove() {
 }
 
 /* 801C9124-801C95FC       .text itemplaceCheck__12dMenu_Item_cFi */
-void dMenu_Item_c::itemplaceCheck(int) {
+bool dMenu_Item_c::itemplaceCheck(int) {
     /* Nonmatching */
 }
 
@@ -393,48 +394,149 @@ void dMenu_Item_c::mainTrans(float x, float y) {
 }
 
 /* 801CC9D8-801CC9FC       .text titleTrans__12dMenu_Item_cFff */
-void dMenu_Item_c::titleTrans(float, float) {
+void dMenu_Item_c::titleTrans(float x, float y) {
     /* Nonmatching */
+    fopMsgM_paneTrans(&this->m9E0, x, y);
 }
 
 /* 801CC9FC-801CCA88       .text noteRotate__12dMenu_Item_cFff */
-void dMenu_Item_c::noteRotate(float, float) {
-    /* Nonmatching */
+void dMenu_Item_c::noteRotate(float y, float x) {
+    fopMsgM_paneTrans(&m820, 0.0f, y);
+    f32 half = 0.5f;
+    f32 sizeY = m820.mSize.y;
+    f32 centerY = sizeY * half;
+    m820.pane->rotate(m820.mSize.x * half, centerY, ROTATE_Z, x);
 }
 
 /* 801CCA88-801CCB3C       .text nameTrans__12dMenu_Item_cFff */
-void dMenu_Item_c::nameTrans(float, float) {
-    /* Nonmatching */
+void dMenu_Item_c::nameTrans(float x, float y) {
+    fopMsgM_paneTrans(&m858, x, y);
+    mpOutFont->setLeftUpPos(m858.mPosTopLeft.x, m858.mPosTopLeft.y);
+    mpOutFont->move();
+    fopMsgM_paneTrans(&m890, x, y);
+    fopMsgM_paneTrans(&m8C8, x, y);
+    fopMsgM_paneTrans(&m900, x, y);
+    fopMsgM_paneTrans(&m938, x, y);
 }
 
 /* 801CCB3C-801CCD74       .text mainOpenProc__12dMenu_Item_cFsss */
-void dMenu_Item_c::mainOpenProc(short, short, short) {
-    /* Nonmatching */
+void dMenu_Item_c::mainOpenProc(short param_0, short param_1, short param_2) {
+    if (param_1 >= param_0) {
+        f32 alpha = fopMsgM_valueIncrease(param_1, param_0, 0);
+        mainTrans(param_2 * fopMsgM_valueIncrease(param_1, param_1 - param_0, 0), 0.0f);
+        fopMsgM_setNowAlpha(&m1498, alpha);
+        fopMsgM_setNowAlpha(&m14D0, alpha);
+        fopMsgM_setNowAlpha(&m1508, alpha);
+        fopMsgM_setNowAlpha(&m1540, alpha);
+        fopMsgM_setNowAlpha(&m1578, alpha);
+        fopMsgM_setNowAlpha(&m15B0, alpha);
+        fopMsgM_setNowAlpha(&m15E8, alpha);
+        fopMsgM_setNowAlpha(&m1620, alpha);
+        for (int i = 0; i < 21; i++) {
+            fopMsgM_setNowAlpha(&m1658[i], alpha);
+            fopMsgM_setNowAlpha(&m1AF0[i], alpha);
+        }
+        for (int i = 0; i < 6; i++) {
+            if (itemplaceCheck(i)) {
+                fopMsgM_setNowAlpha(&m20D8[i], alpha);
+            }
+        }
+        fopMsgM_setNowAlpha(&m2228, alpha);
+        fopMsgM_setNowAlpha(&m2260, alpha);
+        fopMsgM_setNowAlpha(&m2298, alpha);
+        fopMsgM_setNowAlpha(&m22D0, alpha);
+        for (int i = 0; i < 4; i++) {
+            fopMsgM_setNowAlpha(&mA18[i], alpha);
+        }
+        for (int i = 0; i < 3; i++) {
+            fopMsgM_setNowAlpha(&(&m1F88)[i], alpha);
+            fopMsgM_setNowAlpha(&(&m2030)[i], alpha);
+            if (dComIfGp_getSelectItem(i) != 0xFF) {
+                (&m2030)[i].pane->show();
+            } else {
+                (&m2030)[i].pane->hide();
+            }
+        }
+    }
 }
 
 /* 801CCD74-801CCE5C       .text titleOpenProc__12dMenu_Item_cFss */
-void dMenu_Item_c::titleOpenProc(short, short) {
+void dMenu_Item_c::titleOpenProc(short param_1, short param_2) {
     /* Nonmatching */
+    s16 sVar1 = g_miHIO.field_0x28 + 0; // "+ 0" forces the s16 re-extension (extsh) at use
+    if (param_2 >= param_1) {
+        fopMsgM_valueIncrease(param_2, param_1, 0);
+        titleTrans(0.0f, sVar1 * fopMsgM_valueIncrease(param_2, param_2 - param_1, 0));
+        fopMsgM_setInitAlpha(&this->m9A8);
+        fopMsgM_setInitAlpha(&this->m9E0);
+        if (param_1 == 1) {
+            JAIZelBasic::zel_basic->seStart(0x811, (cXyz*)0x0, 0, 0, 1.0f, 1.0f, -1.0f, -1.0f, 0);
+        }
+    }
 }
 
 /* 801CCE5C-801CCF50       .text noteOpenProc__12dMenu_Item_cFss */
-void dMenu_Item_c::noteOpenProc(short, short) {
+void dMenu_Item_c::noteOpenProc(short param_1, short param_2) {
     /* Nonmatching */
+    int iVar2;
+    int iVar1;
+    f32 dVar5;
+
+    iVar2 = g_miHIO.field_0x2A;
+    iVar1 = g_miHIO.field_0x3E;
+    if (param_2 >= param_1) {
+        fopMsgM_valueIncrease(param_2, param_1, 0);
+        dVar5 = fopMsgM_valueIncrease(param_2, param_2 - param_1, 0);
+        noteRotate(iVar1 * dVar5, m820.mUserArea + dVar5 * (iVar2 - m820.mUserArea));
+        for (int i = 0; i < 6; i++) {
+            fopMsgM_setInitAlpha(&m7B0);
+            fopMsgM_setInitAlpha(&m7E8);
+        }
+    }
 }
 
 /* 801CCF50-801CD004       .text nameOpenProc__12dMenu_Item_cFss */
-void dMenu_Item_c::nameOpenProc(short, short) {
-    /* Nonmatching */
+void dMenu_Item_c::nameOpenProc(short param_1, short param_2) {
+    s16 sVar1 = g_miHIO.field_0x2C + 0; // "+ 0" forces the s16 re-extension (extsh) at use
+    if (param_2 >= param_1) {
+        fopMsgM_valueIncrease(param_2, param_1, 0);
+        nameTrans(0.0f, sVar1 * fopMsgM_valueIncrease(param_2, param_2 - param_1, 0));
+        fopMsgM_setInitAlpha(&m890);
+        fopMsgM_setInitAlpha(&m900);
+        fopMsgM_setInitAlpha(&m938);
+    }
 }
 
 /* 801CD004-801CD04C       .text numberSet__12dMenu_Item_cFP7J2DPaneUc */
-void dMenu_Item_c::numberSet(J2DPane*, unsigned char) {
-    /* Nonmatching */
+void dMenu_Item_c::numberSet(J2DPane* pane, u8 num) {
+    static char* number[10] = {
+        "count_num_0.bti", "count_num_1.bti", "count_num_2.bti", "count_num_3.bti",
+        "count_num_4.bti", "count_num_5.bti", "count_num_6.bti", "count_num_7.bti",
+        "count_num_8.bti", "count_num_9.bti",
+    };
+    if (num >= 10) {
+        num = 0;
+    }
+    ((J2DPicture*)pane)->changeTexture(number[num], 0);
 }
 
 /* 801CD04C-801CD194       .text numberColor__12dMenu_Item_cFP7J2DPaneUc */
-void dMenu_Item_c::numberColor(J2DPane*, unsigned char) {
-    /* Nonmatching */
+void dMenu_Item_c::numberColor(J2DPane* pane, u8 mode) {
+    J2DPicture* pic = (J2DPicture*)pane;
+    switch (mode) {
+    case 1:
+        pic->setWhite(JUtility::TColor(0xFFC832FF));
+        pic->setBlack(JUtility::TColor(0x1E1E1E00));
+        break;
+    case 2:
+        pic->setWhite(JUtility::TColor(0xB4B4B4FF));
+        pic->setBlack(JUtility::TColor(0x1E1E1E00));
+        break;
+    default:
+        pic->setWhite(JUtility::TColor(0xFFFFFFFF));
+        pic->setBlack(JUtility::TColor(0x00000000));
+        break;
+    }
 }
 
 /* 801CD194-801CD3FC       .text itemNumberSet__12dMenu_Item_cFv */

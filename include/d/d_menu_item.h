@@ -46,7 +46,7 @@ public:
     void cursorMainMove();
     void cursorSubMove();
     void checkMove();
-    void itemplaceCheck(int);
+    bool itemplaceCheck(int);
     void itemDecide();
     void itemMove();
     void itemScale();
