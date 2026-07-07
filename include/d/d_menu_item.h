@@ -17,7 +17,9 @@ class dMenu_save_c;
 
 class dMenu_Item_c : public dMenu_base_c {
 public:
-    void alphaChange(fopMsgM_pane_class*, f32) {}
+    void alphaChange(fopMsgM_pane_class* i_pane, f32 t) {
+        i_pane->pane->mAlpha = (f32)i_pane->mNowAlpha * t;
+    }
     virtual void draw() {_draw();}
     u8 getItemMode() { return mItemMode; }
     u8 getNowItem() { return mNowItem; }
@@ -78,10 +80,10 @@ public:
     void itemCheck(int);
     void itemBitCheck(bool);
     void arrowLightAnime();
-    void bottleFwaterCheck();
-    void recollectBossCheck();
+    int bottleFwaterCheck();
+    BOOL recollectBossCheck();
     void cornerMove();
-    void equipBeastItem(int);
+    int equipBeastItem(int);
     virtual void _create();
     virtual void _delete();
     virtual void _move();
@@ -93,7 +95,7 @@ public:
 
 private:
     /* 0x0000 */ // vtable
-    /* 0x0004 */ J2DScreen* mpScreen;             // "menu_item_02.blo"
+    /* 0x0004 */ J2DScreen* scrn;             // "menu_item_02.blo"
     /* 0x0008 */ fopMsgM_pane_class m008;         // "ft15"
     /* 0x0040 */ fopMsgM_pane_class m040;         // "ft16"
     /* 0x0078 */ fopMsgM_pane_class m078;         // "ft17"
@@ -142,8 +144,8 @@ private:
     /* 0x2260 */ fopMsgM_pane_class m2260;        // "cc22"
     /* 0x2298 */ fopMsgM_pane_class m2298;        // "cc11"
     /* 0x22D0 */ fopMsgM_pane_class m22D0;        // "cc00"
-    /* 0x2308 */ STControl* mpStick;
-    /* 0x230C */ dDlst_2DOutFont_c* mpOutFont;
+    /* 0x2308 */ STControl* stick;
+    /* 0x230C */ dDlst_2DOutFont_c* outFont;
     /* 0x2310 */ JKRArchive* mpArc;
     /* 0x2314 */ JUTFont* mFont;
     /* 0x2318 */ JUTFont* mRFont;
@@ -152,7 +154,7 @@ private:
     /* 0x2324 */ JUtility::TColor color_0x2324;
     /* 0x2328 */ JUtility::TColor color_0x2328;
     /* 0x232C */ JUtility::TColor color_0x232C;
-    /* 0x2330 */ dMenu_save_c* mpMenuSave;
+    /* 0x2330 */ dMenu_save_c* dMs_c;
     /* 0x2334 */ void* mItemTexBuffer[24];        // only [0..20] used
     /* 0x2394 */ void* mSubItemTexBuffer[9];
     /* 0x23B8 */ JPABaseEmitter* mpEmitter[2];
@@ -161,7 +163,7 @@ private:
     /* 0x23E0 */ char* name[2];
     /* 0x23E8 */ char* note[2];
     /* 0x23F0 */ char* dummy[2];
-    /* 0x23F8 */ u16 mTimer;
+    /* 0x23F8 */ s16 mTimer;
     /* 0x23FA */ s16 m23FA[2];
     /* 0x23FE */ u8 mItemMode;
     /* 0x23FF */ u8 mNowItem;

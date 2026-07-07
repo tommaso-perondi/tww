@@ -820,6 +820,9 @@ bool dMeter_subWinFlag();
 void dMeter_subWinFlagOn();
 void dMeter_subWinFlagOff();
 
+u8 dMeter_itemMoveFlagCheck();
+void dMeter_itemMoveSet(fopMsgM_pane_class* pane, u8 btn, u8 item);
+
 void dMeter_walletChange(sub_meter_class* i_Meter);
 
 void dMeter_compassDirOpen(sub_meter_class* i_Meter);
