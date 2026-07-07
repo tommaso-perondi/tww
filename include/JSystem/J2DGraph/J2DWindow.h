@@ -40,9 +40,11 @@ public:
     void getContentsColor(TContentsColor&) const {}
     void getWhite() const {}
     void setBlack(JUtility::TColor) {}
-    void setContentsColor(TContentsColor) {}
+    void setContentsColor(TContentsColor contents) {
+        setContentsColor(contents.mTL, contents.mTR, contents.mBL, contents.mBR);
+    }
     void setContentsColor(JUtility::TColor) {}
-    void setWhite(JUtility::TColor) {}
+    void setWhite(JUtility::TColor white) { mWhite = white; }
 
 public:
     /* 0x0CC */ JUTTexture* mpFrameTexture1;

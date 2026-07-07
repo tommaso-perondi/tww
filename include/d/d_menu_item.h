@@ -133,12 +133,8 @@ private:
     /* 0x1620 */ fopMsgM_pane_class m1620;        // "1410"
     /* 0x1658 */ fopMsgM_pane_class m1658[21];    // l_it (item icons)
     /* 0x1AF0 */ fopMsgM_pane_class m1AF0[21];    // l_ik
-    /* 0x1F88 */ fopMsgM_pane_class m1F88;        // "bwl1"
-    /* 0x1FC0 */ fopMsgM_pane_class m1FC0;        // "bwl2"
-    /* 0x1FF8 */ fopMsgM_pane_class m1FF8;        // "bwl3"
-    /* 0x2030 */ fopMsgM_pane_class m2030;        // "chk1"
-    /* 0x2068 */ fopMsgM_pane_class m2068;        // "chk2"
-    /* 0x20A0 */ fopMsgM_pane_class m20A0;        // "chk3"
+    /* 0x1F88 */ fopMsgM_pane_class m1F88[3];     // "bwl1"-"bwl3"
+    /* 0x2030 */ fopMsgM_pane_class m2030[3];     // "chk1"-"chk3"
     /* 0x20D8 */ fopMsgM_pane_class m20D8[6];     // l_ip
     /* 0x2228 */ fopMsgM_pane_class m2228;        // "cc35"
     /* 0x2260 */ fopMsgM_pane_class m2260;        // "cc22"
