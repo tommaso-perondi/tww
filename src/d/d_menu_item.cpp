@@ -18,7 +18,7 @@ dMi_HIO_c g_miHIO;
 
 /* 801C7B4C-801C7C7C       .text __ct__9dMi_HIO_cFv */
 dMi_HIO_c::dMi_HIO_c() {
-    field_0x08 = 0.8f;
+    mNoteOpenRatio = 0.8f;
     field_0x0C = 15;
 
     for (int i = 0; i < ARR_SIZE; i++) {
@@ -28,24 +28,24 @@ dMi_HIO_c::dMi_HIO_c() {
 
     field_0x18 = 0;
     field_0x24 = 1;
-    field_0x26 = -100;
-    field_0x28 = -100;
-    field_0x2A = -45;
-    field_0x2C = 50;
+    mMainSlideX = -100;
+    mTitleSlideY = -100;
+    mNoteOpenAngle = -45;
+    mNameSlideY = 50;
     field_0x2E = 30;
-    field_0x30 = -3;
-    field_0x32 = 10;
-    field_0x34 = 7;
-    field_0x36 = 14;
-    field_0x38 = 5;
-    field_0x3A = 12;
-    field_0x3C = 10;
-    field_0x40 = 320;
-    field_0x42 = 240;
-    field_0x3E = 200;
+    mNoteOpenFinalAngle = -3;
+    mCursorBlinkPeriod = 10;
+    mCursorOffset1 = 7;
+    mCursorOffset2 = 14;
+    mNoteOpenDuration = 5;
+    mNoteHoldDuration = 12;
+    mNoteCloseDuration = 10;
+    mScreenCenterX = 320;
+    mScreenCenterY = 240;
+    mNoteSlideY = 200;
     field_0x46 = 0;
     field_0x48 = 20;
-    field_0x44 = -120;
+    mNoteCloseAngle = -120;
 
     // Light Yellow-Green
     mClothColor.r = 0xE3;
@@ -59,7 +59,7 @@ dMi_HIO_c::dMi_HIO_c() {
     mShadowColor.b = 0x00;
     mShadowColor.a = 0x00;
 
-    field_0x5C = 130;
+    mMaskAlpha = 130;
 
     mBlackColor.set(0x00, 0x00, 0x00, 0xFF); // Black
     // mWhiteColor stays as default.
@@ -69,37 +69,37 @@ dMi_HIO_c::dMi_HIO_c() {
 void dMenu_Item_c::initialize() {
     itemBitCheck(true);
     mTimer = 0;
-    m858.mUserArea = 10;
-    mA18[0].mUserArea = 0;
+    mItemNamePane.mUserArea = 10;
+    mCursorPane[0].mUserArea = 0;
     m2422 = 0;
     noteInit();
     outFontInit();
     checkMove();
     itemNumberSet();
-    m970.mInitAlpha = g_miHIO.field_0x5C;
-    m23FA[0] = 0;
-    m23FA[1] = 0;
+    m970.mInitAlpha = g_miHIO.mMaskAlpha;
+    mCornerAnimTimer[0] = 0;
+    mCornerAnimTimer[1] = 0;
     J2DWindow* window = (J2DWindow*)m14D0.pane;
-    color_0x2320.r = window->mColorTL.r;
-    color_0x2320.g = window->mColorTL.g;
-    color_0x2320.b = window->mColorTL.b;
-    color_0x2320.a = window->mColorTL.a;
-    color_0x2324.r = window->mColorTR.r;
-    color_0x2324.g = window->mColorTR.g;
-    color_0x2324.b = window->mColorTR.b;
-    color_0x2324.a = window->mColorTR.a;
-    color_0x2328.r = window->mColorBL.r;
-    color_0x2328.g = window->mColorBL.g;
-    color_0x2328.b = window->mColorBL.b;
-    color_0x2328.a = window->mColorBL.a;
-    color_0x232C.r = window->mColorBR.r;
-    color_0x232C.g = window->mColorBR.g;
-    color_0x232C.b = window->mColorBR.b;
-    color_0x232C.a = window->mColorBR.a;
-    m2DPane->insertChild(m1460.pane, mA18[3].pane);
-    m2DPane->insertChild(mA18[3].pane, mA18[2].pane);
-    m2DPane->insertChild(mA18[2].pane, mA18[1].pane);
-    m2DPane->insertChild(mA18[1].pane, mA18[0].pane);
+    mCornerColorTL.r = window->mColorTL.r;
+    mCornerColorTL.g = window->mColorTL.g;
+    mCornerColorTL.b = window->mColorTL.b;
+    mCornerColorTL.a = window->mColorTL.a;
+    mCornerColorTR.r = window->mColorTR.r;
+    mCornerColorTR.g = window->mColorTR.g;
+    mCornerColorTR.b = window->mColorTR.b;
+    mCornerColorTR.a = window->mColorTR.a;
+    mCornerColorBL.r = window->mColorBL.r;
+    mCornerColorBL.g = window->mColorBL.g;
+    mCornerColorBL.b = window->mColorBL.b;
+    mCornerColorBL.a = window->mColorBL.a;
+    mCornerColorBR.r = window->mColorBR.r;
+    mCornerColorBR.g = window->mColorBR.g;
+    mCornerColorBR.b = window->mColorBR.b;
+    mCornerColorBR.a = window->mColorBR.a;
+    m2DPane->insertChild(m1460.pane, mCursorPane[3].pane);
+    m2DPane->insertChild(mCursorPane[3].pane, mCursorPane[2].pane);
+    m2DPane->insertChild(mCursorPane[2].pane, mCursorPane[1].pane);
+    m2DPane->insertChild(mCursorPane[1].pane, mCursorPane[0].pane);
 }
 
 /* 801C7DC4-801C8724       .text screenSet__12dMenu_Item_cFv */
@@ -225,19 +225,19 @@ void dMenu_Item_c::screenSet() {
         'fd14',
     };
 
-    J2DPane* pJVar2;
-    J2DPane* pJVar3;
+    J2DPane* root_pane;
+    J2DPane* found_pane;
 
-    pJVar2 = this->scrn->search('ROOT');
-    this->m2DPane = pJVar2;
+    root_pane = this->scrn->search('ROOT');
+    this->m2DPane = root_pane;
     fopMsgM_setPaneData(&this->m008, this->scrn, 'ft15');
     fopMsgM_setPaneData(&this->m040, this->scrn, 'ft16');
     fopMsgM_setPaneData(&this->m078, this->scrn, 'ft17');
     for (int i = 0; i < 15; i++) {
-        pJVar3 = this->scrn->search(l_ft[i]);
-        fopMsgM_setPaneData(&this->m0B0[i], pJVar3);
-        pJVar3 = this->scrn->search(l_fd[i]);
-        fopMsgM_setPaneData(&this->m3F8[i], pJVar3);
+        found_pane = this->scrn->search(l_ft[i]);
+        fopMsgM_setPaneData(&this->m0B0[i], found_pane);
+        found_pane = this->scrn->search(l_fd[i]);
+        fopMsgM_setPaneData(&this->m3F8[i], found_pane);
         this->m0B0[i].mUserArea = -1;
     }
     fopMsgM_setPaneData(&this->m740, this->scrn, 'str0');
@@ -259,10 +259,10 @@ void dMenu_Item_c::screenSet() {
     ((J2DTextBox*)m778.pane)->setCharColor(0x000000FF);
     ((J2DTextBox*)m778.pane)->setGradColor(0x000000FF);
 
-    fopMsgM_setPaneData(&this->m858, this->scrn, 'wd');
-    (this->m858).pane->show();
-    ((J2DTextBox*)this->m858.pane)->setFont(this->mFont);
-    this->outFont->setPane(this->mFont, &this->m858, &this->m008, &this->m040, &this->m078);
+    fopMsgM_setPaneData(&this->mItemNamePane, this->scrn, 'wd');
+    (this->mItemNamePane).pane->show();
+    ((J2DTextBox*)this->mItemNamePane.pane)->setFont(this->mFont);
+    this->outFont->setPane(this->mFont, &this->mItemNamePane, &this->m008, &this->m040, &this->m078);
     fopMsgM_setPaneData(&this->m890, this->scrn, 'nm00');
     ((J2DTextBox*)this->m890.pane)->setFont(this->mFont);
     fopMsgM_setPaneData(&this->m8C8, this->scrn, 'nm01');
@@ -274,43 +274,43 @@ void dMenu_Item_c::screenSet() {
     fopMsgM_setPaneData(&this->m9E0, this->scrn, 'tk00');
 
     for (int i = 0; i < 4; i++) {
-        fopMsgM_setPaneData(&this->mA18[i], this->scrn, l_car[i]);
+        fopMsgM_setPaneData(&this->mCursorPane[i], this->scrn, l_car[i]);
     }
     for (int i = 0; i < 8; i++) {
-        fopMsgM_setPaneData(&this->mAF8[i], this->scrn, l_sin_01[i]);
-        fopMsgM_setPaneData(&this->mCB8[i], this->scrn, l_sin_10[i]);
-        fopMsgM_setPaneData(&this->mE78[i], this->scrn, l_sit[i]);
-        fopMsgM_setPaneData(&this->m1070[i], this->scrn, l_sik[i]);
+        fopMsgM_setPaneData(&this->mSubItemNumOnesPane[i], this->scrn, l_sin_01[i]);
+        fopMsgM_setPaneData(&this->mSubItemNumTensPane[i], this->scrn, l_sin_10[i]);
+        fopMsgM_setPaneData(&this->mSubItemPane[i], this->scrn, l_sit[i]);
+        fopMsgM_setPaneData(&this->mSubItemShadowPane[i], this->scrn, l_sik[i]);
     }
-    fopMsgM_setPaneData(&this->m1038, this->scrn, 'it29');
-    fopMsgM_setPaneData(&this->m1230, this->scrn, 'ik29');
+    fopMsgM_setPaneData(&this->mSubItemBackPane, this->scrn, 'it29');
+    fopMsgM_setPaneData(&this->mSubItemBackShadowPane, this->scrn, 'ik29');
     for (int i = 0; i < 9; i++) {
         fopMsgM_setPaneData(&this->m1268[i], this->scrn, l_sb[i]);
     }
     fopMsgM_setPaneData(&this->m1460, this->scrn, 'blak');
-    fopMsgM_setPaneData(&this->m1498, this->scrn, 'wdsv');
+    fopMsgM_setPaneData(&this->mSaveIconPane, this->scrn, 'wdsv');
     fopMsgM_setPaneData(&this->m14D0, this->scrn, 'wk01');
     fopMsgM_setPaneData(&this->m1508, this->scrn, 'wk00');
-    fopMsgM_setPaneData(&this->m1540, this->scrn, '0301');
-    fopMsgM_setPaneData(&this->m1578, this->scrn, '1301');
-    fopMsgM_setPaneData(&this->m15B0, this->scrn, '1310');
-    fopMsgM_setPaneData(&this->m15E8, this->scrn, '1401');
-    fopMsgM_setPaneData(&this->m1620, this->scrn, '1410');
+    fopMsgM_setPaneData(&this->mPictureNumPane, this->scrn, '0301');
+    fopMsgM_setPaneData(&this->mArrowNumOnesPane, this->scrn, '1301');
+    fopMsgM_setPaneData(&this->mArrowNumTensPane, this->scrn, '1310');
+    fopMsgM_setPaneData(&this->mBombNumOnesPane, this->scrn, '1401');
+    fopMsgM_setPaneData(&this->mBombNumTensPane, this->scrn, '1410');
     for (int i = 0; i < 0x15; i++) {
-        fopMsgM_setPaneData(&this->m1658[i], this->scrn, l_it[i]);
-        fopMsgM_setPaneData(&this->m1AF0[i], this->scrn, l_ik[i]);
+        fopMsgM_setPaneData(&this->mItemPane[i], this->scrn, l_it[i]);
+        fopMsgM_setPaneData(&this->mItemShadowPane[i], this->scrn, l_ik[i]);
     }
-    fopMsgM_setPaneData(&this->m1F88[0], this->scrn, 'bwl1');
-    fopMsgM_setPaneData(&this->m1F88[1], this->scrn, 'bwl2');
-    fopMsgM_setPaneData(&this->m1F88[2], this->scrn, 'bwl3');
-    this->m1F88[0].pane->hide();
-    this->m1F88[1].pane->hide();
-    this->m1F88[2].pane->hide();
-    fopMsgM_setPaneData(&this->m2030[0], this->scrn, 'chk1');
-    fopMsgM_setPaneData(&this->m2030[1], this->scrn, 'chk2');
-    fopMsgM_setPaneData(&this->m2030[2], this->scrn, 'chk3');
+    fopMsgM_setPaneData(&this->mBowGlowPane[0], this->scrn, 'bwl1');
+    fopMsgM_setPaneData(&this->mBowGlowPane[1], this->scrn, 'bwl2');
+    fopMsgM_setPaneData(&this->mBowGlowPane[2], this->scrn, 'bwl3');
+    this->mBowGlowPane[0].pane->hide();
+    this->mBowGlowPane[1].pane->hide();
+    this->mBowGlowPane[2].pane->hide();
+    fopMsgM_setPaneData(&this->mCheckMarkPane[0], this->scrn, 'chk1');
+    fopMsgM_setPaneData(&this->mCheckMarkPane[1], this->scrn, 'chk2');
+    fopMsgM_setPaneData(&this->mCheckMarkPane[2], this->scrn, 'chk3');
     for (int i = 0; i < 6; i++) {
-        fopMsgM_setPaneData(&this->m20D8[i], this->scrn, l_ip[i]);
+        fopMsgM_setPaneData(&this->mCategoryPane[i], this->scrn, l_ip[i]);
     }
     fopMsgM_setPaneData(&this->m2228, this->scrn, 'cc35');
     fopMsgM_setPaneData(&this->m2260, this->scrn, 'cc22');
@@ -320,105 +320,128 @@ void dMenu_Item_c::screenSet() {
         u8 itemNo = dComIfGs_getItem(i);
         if (itemNo != dItemNo_NONE_e) {
             if (itemNo == dItemNo_MAGIC_ARROW_e) {
-                this->m1F88[0].pane->show();
-                this->m1F88[1].pane->show();
-                this->m1F88[2].pane->hide();
+                this->mBowGlowPane[0].pane->show();
+                this->mBowGlowPane[1].pane->show();
+                this->mBowGlowPane[2].pane->hide();
                 itemNo = dItemNo_BOW_e;
             } else if (itemNo == dItemNo_LIGHT_ARROW_e) {
-                this->m1F88[0].pane->show();
-                this->m1F88[1].pane->show();
-                this->m1F88[2].pane->show();
+                this->mBowGlowPane[0].pane->show();
+                this->mBowGlowPane[1].pane->show();
+                this->mBowGlowPane[2].pane->show();
                 itemNo = dItemNo_BOW_e;
             }
             JKRReadTypeResource(mItemTexBuffer[i], 0xc00, 'TIMG', dItem_data::getTexture(itemNo), dComIfGp_getItemIconArchive());
+#if VERSION <= VERSION_JPN
+            DCFlushRangeNoSync(mItemTexBuffer[i], 0xc00);
+
+#else
             DCStoreRangeNoSync(mItemTexBuffer[i], 0xc00);
-            ((J2DPicture*)m1658[i].pane)->changeTexture((ResTIMG*)mItemTexBuffer[i], 0);
-            ((J2DPicture*)m1AF0[i].pane)->changeTexture((ResTIMG*)mItemTexBuffer[i], 0);
+
+#endif
+
+            ((J2DPicture*)mItemPane[i].pane)->changeTexture((ResTIMG*)mItemTexBuffer[i], 0);
+            ((J2DPicture*)mItemShadowPane[i].pane)->changeTexture((ResTIMG*)mItemTexBuffer[i], 0);
         }
     }
     for (int i = 0; i < 8; i++) {
         if (dComIfGs_getItemBeast((u8)i) != dItemNo_NONE_e) {
             JKRReadTypeResource(mSubItemTexBuffer[i], 0xc00, 'TIMG', dItem_data::getTexture(dComIfGs_getItemBeast(i)), dComIfGp_getItemIconArchive());
+#if VERSION <= VERSION_JPN
+            DCFlushRangeNoSync(mSubItemTexBuffer[i], 0xc00);
+
+#else
             DCStoreRangeNoSync(mSubItemTexBuffer[i], 0xc00);
-            ((J2DPicture*)mE78[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
-            ((J2DPicture*)m1070[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
+
+#endif
+
+            ((J2DPicture*)mSubItemPane[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
+            ((J2DPicture*)mSubItemShadowPane[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
         }
     }
     JKRReadTypeResource(mSubItemTexBuffer[8], 0xc00, 'TIMG', "cover_return.bti", dComIfGp_getItemIconArchive());
-    DCStoreRangeNoSync(this->mSubItemTexBuffer[8], 0xc00);
-    ((J2DPicture*)(this->m1038).pane)->changeTexture((ResTIMG*)this->mSubItemTexBuffer[8], 0);
-    ((J2DPicture*)(this->m1230).pane)->changeTexture((ResTIMG*)this->mSubItemTexBuffer[8], 0);
+#if VERSION <= VERSION_JPN
+    DCFlushRangeNoSync(mSubItemTexBuffer[8], 0xc00);
+
+#else
+    DCStoreRangeNoSync(mSubItemTexBuffer[8], 0xc00);
+
+#endif
+    ((J2DPicture*)(this->mSubItemBackPane).pane)->changeTexture((ResTIMG*)this->mSubItemTexBuffer[8], 0);
+    ((J2DPicture*)(this->mSubItemBackShadowPane).pane)->changeTexture((ResTIMG*)this->mSubItemTexBuffer[8], 0);
 }
 
 /* 801C8724-801C8B14       .text cursorAnime__12dMenu_Item_cFv */
 void dMenu_Item_c::cursorAnime() {
-    f32 half = 0.5f;
     u8 itemNo = mNowItem;
+    f32 half;
     if (itemNo == 0x15) {
-        mA18[0].mPosCenterOrig.x = m1498.mPosCenter.x - m1498.mSize.x * half;
-        mA18[0].mPosCenterOrig.y = m1498.mPosCenter.y + m1498.mSize.y * half;
-        mA18[1].mPosCenterOrig.x = m1498.mPosCenter.x + m1498.mSize.x * half;
-        mA18[1].mPosCenterOrig.y = m1498.mPosCenter.y + m1498.mSize.y * half;
-        mA18[2].mPosCenterOrig.x = m1498.mPosCenter.x - m1498.mSize.x * half;
-        mA18[2].mPosCenterOrig.y = m1498.mPosCenter.y - m1498.mSize.y * half;
-        mA18[3].mPosCenterOrig.x = m1498.mPosCenter.x + m1498.mSize.x * half;
-        mA18[3].mPosCenterOrig.y = m1498.mPosCenter.y - m1498.mSize.y * half;
+        f32 pos_center_temp = mSaveIconPane.mPosCenter.x;
+        f32 size_temp = mSaveIconPane.mSize.x;
+        half = 0.5f;
+        mCursorPane[0].mPosCenterOrig.x = pos_center_temp - size_temp * half;
+        mCursorPane[0].mPosCenterOrig.y = mSaveIconPane.mPosCenter.y + mSaveIconPane.mSize.y * half;
+        mCursorPane[1].mPosCenterOrig.x = mSaveIconPane.mPosCenter.x + mSaveIconPane.mSize.x * half;
+        mCursorPane[1].mPosCenterOrig.y = mSaveIconPane.mPosCenter.y + mSaveIconPane.mSize.y * half;
+        mCursorPane[2].mPosCenterOrig.x = mSaveIconPane.mPosCenter.x - mSaveIconPane.mSize.x * half;
+        mCursorPane[2].mPosCenterOrig.y = mSaveIconPane.mPosCenter.y - mSaveIconPane.mSize.y * half;
+        mCursorPane[3].mPosCenterOrig.x = mSaveIconPane.mPosCenter.x + mSaveIconPane.mSize.x * half;
+        mCursorPane[3].mPosCenterOrig.y = mSaveIconPane.mPosCenter.y - mSaveIconPane.mSize.y * half;
     } else if (itemNo >= 0x18) {
         u8 idx;
         if (itemNo == 0xff) {
             idx = 8;
         } else {
-            idx = itemNo - m2400[0];
+            idx = itemNo - mItemState[0];
         }
         for (int i = 0; i < 4; i++) {
-            mA18[i].mPosCenterOrig.x = mE78[idx].mPosCenter.x + m23C0[i];
-            mA18[i].mPosCenterOrig.y = mE78[idx].mPosCenter.y + m23D0[i];
+            mCursorPane[i].mPosCenterOrig.x = mSubItemPane[idx].mPosCenter.x + mCursorOffsetX[i];
+            mCursorPane[i].mPosCenterOrig.y = mSubItemPane[idx].mPosCenter.y + mCursorOffsetY[i];
         }
     } else {
         for (int i = 0; i < 4; i++) {
-            mA18[i].mPosCenterOrig.x = m1658[itemNo].mPosCenter.x + m23C0[i];
-            mA18[i].mPosCenterOrig.y = m1658[itemNo].mPosCenter.y + m23D0[i];
+            mCursorPane[i].mPosCenterOrig.x = mItemPane[itemNo].mPosCenter.x + mCursorOffsetX[i];
+            mCursorPane[i].mPosCenterOrig.y = mItemPane[itemNo].mPosCenter.y + mCursorOffsetY[i];
         }
     }
     s16 x, y;
-    if (mA18[0].mUserArea < g_miHIO.field_0x32) {
+    if (mCursorPane[0].mUserArea < g_miHIO.mCursorBlinkPeriod) {
         for (int i = 0; i < 4; i++) {
-            J2DPicture* pic = (J2DPicture*)mA18[i].pane;
+            J2DPicture* pic = (J2DPicture*)mCursorPane[i].pane;
             pic->setBlendColorRatio(1.0f, 0.0f, 1.0f, 1.0f);
             pic->setBlendAlphaRatio(1.0f, 0.0f, 1.0f, 1.0f);
         }
-        x = g_miHIO.field_0x34;
-        y = g_miHIO.field_0x34;
-    } else if (mA18[0].mUserArea < g_miHIO.field_0x32 * 2) {
+        x = g_miHIO.mCursorOffset1;
+        y = g_miHIO.mCursorOffset1;
+    } else if (mCursorPane[0].mUserArea < g_miHIO.mCursorBlinkPeriod * 2) {
         for (int i = 0; i < 4; i++) {
-            J2DPicture* pic = (J2DPicture*)mA18[i].pane;
+            J2DPicture* pic = (J2DPicture*)mCursorPane[i].pane;
             pic->setBlendColorRatio(0.0f, 1.0f, 1.0f, 1.0f);
             pic->setBlendAlphaRatio(0.0f, 1.0f, 1.0f, 1.0f);
         }
-        x = g_miHIO.field_0x36;
-        y = g_miHIO.field_0x36;
+        x = g_miHIO.mCursorOffset2;
+        y = g_miHIO.mCursorOffset2;
     }
-    fopMsgM_paneTrans(&mA18[0], -x, y);
-    fopMsgM_paneTrans(&mA18[1], x, y);
-    fopMsgM_paneTrans(&mA18[2], -x, -y);
-    fopMsgM_paneTrans(&mA18[3], x, -y);
-    mA18[0].mUserArea++;
-    if (mA18[0].mUserArea >= g_miHIO.field_0x32 * 2) {
-        mA18[0].mUserArea = 0;
+    fopMsgM_paneTrans(&mCursorPane[0], -x, y);
+    fopMsgM_paneTrans(&mCursorPane[1], x, y);
+    fopMsgM_paneTrans(&mCursorPane[2], -x, -y);
+    fopMsgM_paneTrans(&mCursorPane[3], x, -y);
+    mCursorPane[0].mUserArea++;
+    if (mCursorPane[0].mUserArea >= g_miHIO.mCursorBlinkPeriod * 2) {
+        mCursorPane[0].mUserArea = 0;
     }
 }
 
 /* 801C8B14-801C8CA0       .text cursorMainMove__12dMenu_Item_cFv */
 void dMenu_Item_c::cursorMainMove() {
     /* Nonmatching */
-    u8 uVar1;
+    u8 old_item;
     u8 item_no;
-    bool cVar3;
+    bool triggered;
 
     this->stick->checkTrigger();
-    uVar1 = this->mNowItem;
-    cVar3 = this->stick->checkRightTrigger();
-    if (cVar3 != 0) {
+    old_item = this->mNowItem;
+    triggered = this->stick->checkRightTrigger();
+    if (triggered != 0) {
         item_no = this->mNowItem;
         if (item_no != 0x15) {
             if (item_no % 7 == 6) {
@@ -428,8 +451,8 @@ void dMenu_Item_c::cursorMainMove() {
             }
         }
     } else {
-        cVar3 = this->stick->checkLeftTrigger();
-        if (cVar3 != 0) {
+        triggered = this->stick->checkLeftTrigger();
+        if (triggered != 0) {
             item_no = this->mNowItem;
             if (item_no != 0x15) {
                 if ((item_no % 7) == 0) {
@@ -440,8 +463,8 @@ void dMenu_Item_c::cursorMainMove() {
             }
         }
     }
-    cVar3 = this->stick->checkUpTrigger();
-    if (cVar3 != '\0') {
+    triggered = this->stick->checkUpTrigger();
+    if (triggered != '\0') {
         item_no = this->mNowItem;
         if (item_no == 0x15) {
             this->mNowItem = '\x0e';
@@ -449,8 +472,8 @@ void dMenu_Item_c::cursorMainMove() {
             this->mNowItem = item_no - 7;
         }
     } else {
-        cVar3 = this->stick->checkDownTrigger();
-        if (cVar3 != '\0') {
+        triggered = this->stick->checkDownTrigger();
+        if (triggered != '\0') {
             item_no = this->mNowItem;
             if (item_no < 0xe) {
                 this->mNowItem = item_no + 7;
@@ -459,8 +482,8 @@ void dMenu_Item_c::cursorMainMove() {
             }
         }
     }
-    if (this->mNowItem != uVar1) {
-        (this->m858).mUserArea = 0;
+    if (this->mNowItem != old_item) {
+        (this->mItemNamePane).mUserArea = 0;
         itemnameSet();
         JAIZelBasic::zel_basic->seStart(0x80e, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     }
@@ -473,7 +496,7 @@ void dMenu_Item_c::cursorSubMove() {
     if (mNowItem == 0xff) {
         idx = 8;
     } else {
-        idx = mNowItem - m2400[0];
+        idx = mNowItem - mItemState[0];
     }
     stick->checkTrigger();
     if (stick->checkRightTrigger()) {
@@ -494,86 +517,87 @@ void dMenu_Item_c::cursorSubMove() {
             idx += 3;
         }
     }
-    if (idx != (u8)(mNowItem - m2400[0])) {
+    if (idx != (u8)(mNowItem - mItemState[0])) {
         if (idx == 8) {
             if (mNowItem != 0xff) {
                 mNowItem = 0xff;
                 JAIZelBasic::zel_basic->seStart(0x80e, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
             }
         } else {
-            mNowItem = idx + m2400[0];
+            mNowItem = idx + mItemState[0];
             JAIZelBasic::zel_basic->seStart(0x80e, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
         }
-        m858.mUserArea = 0;
+        mItemNamePane.mUserArea = 0;
         itemnameSet();
     }
 }
 
 /* 801C8E60-801C9124       .text checkMove__12dMenu_Item_cFv */
 void dMenu_Item_c::checkMove() {
-    for (int i = 0; i < 3; i++) {
-        u8 item = dComIfGs_getSelectItem(i);
-        if (item != 0xff) {
-            m2030[i].pane->show();
+    u8 inventory_slot; 
+    for (s32 i = 0; i < 3; i++) {
+        inventory_slot = dComIfGs_getSelectItem(i);
+        if (inventory_slot != dInvSlot_NONE_e) {
+            mCheckMarkPane[i].pane->show();
             if (dMeter_subWinFlag()) {
-                if (item >= 0x30) {
-                    if (m2400[5] == 2) {
-                        u8 idx = item - 0x30;
-                        m2030[i].mPosCenter.x = mE78[idx].mPosCenter.x;
-                        m2030[i].mPosCenter.y = mE78[idx].mPosCenter.y;
-                        m2DPane->insertChild(m1230.pane, m2030[i].pane);
+                if (inventory_slot >= dInvSlot_ReserveFirst_e) {
+                    if (mItemState[5] == 2) {
+                        u8 idx = inventory_slot - dInvSlot_ReserveFirst_e;
+                        mCheckMarkPane[i].mPosCenter.x = mSubItemPane[idx].mPosCenter.x;
+                        mCheckMarkPane[i].mPosCenter.y = mSubItemPane[idx].mPosCenter.y;
+                        m2DPane->insertChild(mSubItemBackShadowPane.pane, mCheckMarkPane[i].pane);
                     } else {
                         u8 n = fopMsgM_itemNum(dItemNo_DELIVERY_BAG_e);
-                        m2030[i].mPosCenter.x = m1658[n].mPosCenterOrig.x;
-                        m2030[i].mPosCenter.y = m1658[n].mPosCenterOrig.y;
-                        m2DPane->insertChild(m1AF0[0x14].pane, m2030[i].pane);
+                        mCheckMarkPane[i].mPosCenter.x = mItemPane[n].mPosCenterOrig.x;
+                        mCheckMarkPane[i].mPosCenter.y = mItemPane[n].mPosCenterOrig.y;
+                        m2DPane->insertChild(mItemShadowPane[0x14].pane, mCheckMarkPane[i].pane);
                     }
-                } else if (item >= 0x24) {
-                    if (m2400[5] == 1) {
-                        u8 idx = item - 0x24;
-                        m2030[i].mPosCenter.x = mE78[idx].mPosCenter.x;
-                        m2030[i].mPosCenter.y = mE78[idx].mPosCenter.y;
-                        m2DPane->insertChild(m1230.pane, m2030[i].pane);
+                } else if (inventory_slot >= dInvSlot_BaitFirst_e) {
+                    if (mItemState[5] == 1) {
+                        u8 idx = inventory_slot - dInvSlot_BaitFirst_e;
+                        mCheckMarkPane[i].mPosCenter.x = mSubItemPane[idx].mPosCenter.x;
+                        mCheckMarkPane[i].mPosCenter.y = mSubItemPane[idx].mPosCenter.y;
+                        m2DPane->insertChild(mSubItemBackShadowPane.pane, mCheckMarkPane[i].pane);
                     } else {
                         u8 n = fopMsgM_itemNum(dItemNo_BAIT_BAG_e);
-                        m2030[i].mPosCenter.x = m1658[n].mPosCenterOrig.x;
-                        m2030[i].mPosCenter.y = m1658[n].mPosCenterOrig.y;
-                        m2DPane->insertChild(m1AF0[0x14].pane, m2030[i].pane);
+                        mCheckMarkPane[i].mPosCenter.x = mItemPane[n].mPosCenterOrig.x;
+                        mCheckMarkPane[i].mPosCenter.y = mItemPane[n].mPosCenterOrig.y;
+                        m2DPane->insertChild(mItemShadowPane[0x14].pane, mCheckMarkPane[i].pane);
                     }
-                } else if (item >= 0x18) {
-                    if (m2400[5] == 0) {
-                        u8 idx = item - 0x18;
-                        m2030[i].mPosCenter.x = mE78[idx].mPosCenter.x;
-                        m2030[i].mPosCenter.y = mE78[idx].mPosCenter.y;
-                        m2DPane->insertChild(m1230.pane, m2030[i].pane);
+                } else if (inventory_slot >= dInvSlot_BeastFirst_e) {
+                    if (mItemState[5] == 0) {
+                        u8 idx = inventory_slot - dInvSlot_BeastFirst_e;
+                        mCheckMarkPane[i].mPosCenter.x = mSubItemPane[idx].mPosCenter.x;
+                        mCheckMarkPane[i].mPosCenter.y = mSubItemPane[idx].mPosCenter.y;
+                        m2DPane->insertChild(mSubItemBackShadowPane.pane, mCheckMarkPane[i].pane);
                     } else {
                         u8 n = fopMsgM_itemNum(dItemNo_SPOILS_BAG_e);
-                        m2030[i].mPosCenter.x = m1658[n].mPosCenterOrig.x;
-                        m2030[i].mPosCenter.y = m1658[n].mPosCenterOrig.y;
-                        m2DPane->insertChild(m1AF0[0x14].pane, m2030[i].pane);
+                        mCheckMarkPane[i].mPosCenter.x = mItemPane[n].mPosCenterOrig.x;
+                        mCheckMarkPane[i].mPosCenter.y = mItemPane[n].mPosCenterOrig.y;
+                        m2DPane->insertChild(mItemShadowPane[0x14].pane, mCheckMarkPane[i].pane);
                     }
                 } else {
-                    m2030[i].mPosCenter.x = m1658[item].mPosCenterOrig.x;
-                    m2030[i].mPosCenter.y = m1658[item].mPosCenterOrig.y;
-                    m2DPane->insertChild(m1AF0[0x14].pane, m2030[i].pane);
+                    mCheckMarkPane[i].mPosCenter.x = mItemPane[inventory_slot].mPosCenterOrig.x;
+                    mCheckMarkPane[i].mPosCenter.y = mItemPane[inventory_slot].mPosCenterOrig.y;
+                    m2DPane->insertChild(mItemShadowPane[0x14].pane, mCheckMarkPane[i].pane);
                 }
             } else {
-                if (item >= 0x30) {
-                    item = fopMsgM_itemNum(dItemNo_DELIVERY_BAG_e);
-                } else if (item >= 0x24) {
-                    item = fopMsgM_itemNum(dItemNo_BAIT_BAG_e);
-                } else if (item >= 0x18) {
-                    item = fopMsgM_itemNum(dItemNo_SPOILS_BAG_e);
+                if (inventory_slot >= dInvSlot_ReserveFirst_e) {
+                    inventory_slot = fopMsgM_itemNum(dItemNo_DELIVERY_BAG_e);
+                } else if (inventory_slot >= dInvSlot_BaitFirst_e) {
+                    inventory_slot = fopMsgM_itemNum(dItemNo_BAIT_BAG_e);
+                } else if (inventory_slot >= dInvSlot_BeastFirst_e) {
+                    inventory_slot = fopMsgM_itemNum(dItemNo_SPOILS_BAG_e);
                 }
-                m2030[i].mPosCenter.x = m1658[item].mPosCenterOrig.x;
-                m2030[i].mPosCenter.y = m1658[item].mPosCenterOrig.y;
-                m2DPane->insertChild(m1AF0[0x14].pane, m2030[i].pane);
+                mCheckMarkPane[i].mPosCenter.x = mItemPane[inventory_slot].mPosCenterOrig.x;
+                mCheckMarkPane[i].mPosCenter.y = mItemPane[inventory_slot].mPosCenterOrig.y;
+                m2DPane->insertChild(mItemShadowPane[0x14].pane, mCheckMarkPane[i].pane);
             }
-            m2030[i].mPosCenterOrig.x = m2030[i].mPosCenter.x;
-            m2030[i].mPosCenterOrig.y = m2030[i].mPosCenter.y;
-            fopMsgM_cposMove(&m2030[i]);
+            mCheckMarkPane[i].mPosCenterOrig.x = mCheckMarkPane[i].mPosCenter.x;
+            mCheckMarkPane[i].mPosCenterOrig.y = mCheckMarkPane[i].mPosCenter.y;
+            fopMsgM_cposMove(&mCheckMarkPane[i]);
         } else {
-            m2030[i].pane->hide();
+            mCheckMarkPane[i].pane->hide();
         }
     }
 }
@@ -637,70 +661,70 @@ bool dMenu_Item_c::itemplaceCheck(int i_no) {
 
 /* 801C95FC-801C9DF4       .text itemDecide__12dMenu_Item_cFv */
 void dMenu_Item_c::itemDecide() {
-    if (m2400[4] != dItemBtn_NONE_e) {
-        dComIfGs_setSelectItem(m2400[4], m2400[1]);
-        dComIfGp_setSelectItem(m2400[4]);
-        m2400[4] = dItemBtn_NONE_e;
-        if (m2400[3] != dItemBtn_NONE_e) {
-            dComIfGs_setSelectItem(m2400[3], m2400[2]);
-            dComIfGp_setSelectItem(m2400[3]);
-            m2400[3] = dItemBtn_NONE_e;
+    if (mItemState[4] != dItemBtn_NONE_e) {
+        dComIfGs_setSelectItem(mItemState[4], mItemState[1]);
+        dComIfGp_setSelectItem(mItemState[4]);
+        mItemState[4] = dItemBtn_NONE_e;
+        if (mItemState[3] != dItemBtn_NONE_e) {
+            dComIfGs_setSelectItem(mItemState[3], mItemState[2]);
+            dComIfGp_setSelectItem(mItemState[3]);
+            mItemState[3] = dItemBtn_NONE_e;
         }
         JAIZelBasic::zel_basic->seStart(0x817, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     }
     if (CPad_CHECK_TRIG_X(0)) {
-        m2400[4] = dItemBtn_X_e;
+        mItemState[4] = dItemBtn_X_e;
     } else if (CPad_CHECK_TRIG_Y(0)) {
-        m2400[4] = dItemBtn_Y_e;
+        mItemState[4] = dItemBtn_Y_e;
     } else if (CPad_CHECK_TRIG_Z(0)) {
-        m2400[4] = dItemBtn_Z_e;
+        mItemState[4] = dItemBtn_Z_e;
     }
     if (dComIfGs_getItem(mNowItem) == dItemNo_SPOILS_BAG_e) {
-        m2400[5] = 0;
+        mItemState[5] = 0;
         subWindowInit();
-        m2400[4] = dItemBtn_NONE_e;
-        m2400[3] = dItemBtn_NONE_e;
+        mItemState[4] = dItemBtn_NONE_e;
+        mItemState[3] = dItemBtn_NONE_e;
         JAIZelBasic::zel_basic->seStart(0x84a, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     } else if (dComIfGs_getItem(mNowItem) == dItemNo_BAIT_BAG_e) {
-        m2400[5] = 1;
+        mItemState[5] = 1;
         subWindowInit();
-        m2400[4] = dItemBtn_NONE_e;
-        m2400[3] = dItemBtn_NONE_e;
+        mItemState[4] = dItemBtn_NONE_e;
+        mItemState[3] = dItemBtn_NONE_e;
         JAIZelBasic::zel_basic->seStart(0x84a, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     } else if (dComIfGs_getItem(mNowItem) == dItemNo_DELIVERY_BAG_e) {
-        m2400[5] = 2;
+        mItemState[5] = 2;
         subWindowInit();
-        m2400[4] = dItemBtn_NONE_e;
-        m2400[3] = dItemBtn_NONE_e;
+        mItemState[4] = dItemBtn_NONE_e;
+        mItemState[3] = dItemBtn_NONE_e;
         JAIZelBasic::zel_basic->seStart(0x84a, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     } else {
         u8 first, second;
-        if (m2400[4] == dItemBtn_X_e) {
+        if (mItemState[4] == dItemBtn_X_e) {
             first = dItemBtn_Y_e;
             second = dItemBtn_Z_e;
         }
-        if (m2400[4] == dItemBtn_Y_e) {
+        if (mItemState[4] == dItemBtn_Y_e) {
             first = dItemBtn_Z_e;
             second = dItemBtn_X_e;
-        } else if (m2400[4] == dItemBtn_Z_e) {
+        } else if (mItemState[4] == dItemBtn_Z_e) {
             first = dItemBtn_X_e;
             second = dItemBtn_Y_e;
         }
         if (mNowItem == dComIfGs_getSelectItem(first)) {
-            m2400[3] = first;
-            m2400[2] = dComIfGs_getSelectItem(m2400[4]);
+            mItemState[3] = first;
+            mItemState[2] = dComIfGs_getSelectItem(mItemState[4]);
             if (dMeter_subWinFlag()) {
                 subWindowDelete();
             }
         } else if (mNowItem == dComIfGs_getSelectItem(second)) {
-            m2400[3] = second;
-            m2400[2] = dComIfGs_getSelectItem(m2400[4]);
+            mItemState[3] = second;
+            mItemState[2] = dComIfGs_getSelectItem(mItemState[4]);
             if (dMeter_subWinFlag()) {
                 subWindowDelete();
             }
         }
-        m2400[1] = mNowItem;
-        dMeter_itemMoveSet(&m1658[m2400[1]], m2400[4], m2400[1]);
+        mItemState[1] = mNowItem;
+        dMeter_itemMoveSet(&mItemPane[mItemState[1]], mItemState[4], mItemState[1]);
         JAIZelBasic::zel_basic->seStart(0x84a, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     }
 }
@@ -708,13 +732,13 @@ void dMenu_Item_c::itemDecide() {
 /* 801C9DF4-801CA18C       .text itemMove__12dMenu_Item_cFv */
 void dMenu_Item_c::itemMove() {
     if (dMeter_itemMoveFlagCheck() == 2) {
-        dComIfGs_setSelectItem(m2400[4], m2400[1]);
-        dComIfGp_setSelectItem(m2400[4]);
-        m2400[4] = dItemBtn_NONE_e;
-        if (m2400[3] != dItemBtn_NONE_e) {
-            dComIfGs_setSelectItem(m2400[3], m2400[2]);
-            dComIfGp_setSelectItem(m2400[3]);
-            m2400[3] = dItemBtn_NONE_e;
+        dComIfGs_setSelectItem(mItemState[4], mItemState[1]);
+        dComIfGp_setSelectItem(mItemState[4]);
+        mItemState[4] = dItemBtn_NONE_e;
+        if (mItemState[3] != dItemBtn_NONE_e) {
+            dComIfGs_setSelectItem(mItemState[3], mItemState[2]);
+            dComIfGp_setSelectItem(mItemState[3]);
+            mItemState[3] = dItemBtn_NONE_e;
         }
         JAIZelBasic::zel_basic->seStart(0x817, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     }
@@ -726,12 +750,12 @@ void dMenu_Item_c::itemScale() {
 
     if (mNowItem == dItemNo_SMALL_KEY_e) {
         for (int i = 0; i < 0x15; i++) {
-            fopMsgM_paneScaleXY(&m1658[i], 1.0f);
-            fopMsgM_paneScaleXY(&m1AF0[i], 1.0f);
+            fopMsgM_paneScaleXY(&mItemPane[i], 1.0f);
+            fopMsgM_paneScaleXY(&mItemShadowPane[i], 1.0f);
         }
         for (int j = 0; j < 8; j++) {
-            fopMsgM_paneScaleXY(&mE78[j], 1.0f);
-            fopMsgM_paneScaleXY(&m1070[j], 1.0f);
+            fopMsgM_paneScaleXY(&mSubItemPane[j], 1.0f);
+            fopMsgM_paneScaleXY(&mSubItemShadowPane[j], 1.0f);
         }
         return;
     }
@@ -748,35 +772,37 @@ void dMenu_Item_c::itemScale() {
     }
 
     for (int i = 0; i < 0x15; i++) {
-        if (i == group && m2400[4] == 3) {
-            fopMsgM_paneScaleXY(&m1658[i], g_menuHIO.field_0x8);
-            fopMsgM_paneScaleXY(&m1AF0[i], g_menuHIO.field_0x8);
+        if (i == group && mItemState[4] == 3) {
+            fopMsgM_paneScaleXY(&mItemPane[i], g_menuHIO.field_0x8);
+            fopMsgM_paneScaleXY(&mItemShadowPane[i], g_menuHIO.field_0x8);
             if (group == dInvSlot_BOW_e) {
                 for (int k = 0; k < 3; k++) {
-                    m1F88[k].mPosCenter.x = m1658[i].mPosCenter.x + g_menuHIO.field_0x8 * (m1F88[k].mPosCenterOrig.x - m1658[i].mPosCenterOrig.x);
-                    m1F88[k].mPosCenter.y = m1658[i].mPosCenter.y + g_menuHIO.field_0x8 * (m1F88[k].mPosCenterOrig.y - m1658[i].mPosCenterOrig.y);
+                    mBowGlowPane[k].mPosCenter.x =
+                        mItemPane[i].mPosCenter.x + g_menuHIO.field_0x8 * (mBowGlowPane[k].mPosCenterOrig.x - mItemPane[i].mPosCenterOrig.x);
+                    mBowGlowPane[k].mPosCenter.y =
+                        mItemPane[i].mPosCenter.y + g_menuHIO.field_0x8 * (mBowGlowPane[k].mPosCenterOrig.y - mItemPane[i].mPosCenterOrig.y);
                 }
             }
         } else {
-            fopMsgM_paneScaleXY(&m1658[i], 1.0f);
-            fopMsgM_paneScaleXY(&m1AF0[i], 1.0f);
+            fopMsgM_paneScaleXY(&mItemPane[i], 1.0f);
+            fopMsgM_paneScaleXY(&mItemShadowPane[i], 1.0f);
         }
     }
 
     if (mNowItem == 0xff) {
         for (int i = 0; i < 8; i++) {
-            fopMsgM_paneScaleXY(&mE78[i], 1.0f);
-            fopMsgM_paneScaleXY(&m1070[i], 1.0f);
+            fopMsgM_paneScaleXY(&mSubItemPane[i], 1.0f);
+            fopMsgM_paneScaleXY(&mSubItemShadowPane[i], 1.0f);
         }
     } else if (mNowItem >= 0x15) {
-        group = mNowItem - m2400[0];
+        group = mNowItem - mItemState[0];
         for (int i = 0; i < 8; i++) {
-            if (i == group && m2400[4] == 3) {
-                fopMsgM_paneScaleXY(&mE78[i], g_menuHIO.field_0x8);
-                fopMsgM_paneScaleXY(&m1070[i], g_menuHIO.field_0x8);
+            if (i == group && mItemState[4] == 3) {
+                fopMsgM_paneScaleXY(&mSubItemPane[i], g_menuHIO.field_0x8);
+                fopMsgM_paneScaleXY(&mSubItemShadowPane[i], g_menuHIO.field_0x8);
             } else {
-                fopMsgM_paneScaleXY(&mE78[i], 1.0f);
-                fopMsgM_paneScaleXY(&m1070[i], 1.0f);
+                fopMsgM_paneScaleXY(&mSubItemPane[i], 1.0f);
+                fopMsgM_paneScaleXY(&mSubItemShadowPane[i], 1.0f);
             }
         }
     }
@@ -785,102 +811,105 @@ void dMenu_Item_c::itemScale() {
 /* 801CA3F4-801CAA04       .text subWindowInit__12dMenu_Item_cFv */
 void dMenu_Item_c::subWindowInit() {
     dMeter_subWinFlagOn();
-    m858.mUserArea = 0;
-    if (m2400[5] == 0) {
-        m2400[0] = 0x18;
-        mNowItem = m2400[0];
+    mItemNamePane.mUserArea = 0;
+    if (mItemState[5] == 0) {
+        mItemState[0] = 0x18;
+        mNowItem = mItemState[0];
         for (int i = 0; i < 8; i++) {
-            if (dComIfGs_getItemBeast(i) != dItemNo_NONE_e) {
-                mE78[i].mUserArea = 1;
-                JKRReadTypeResource(mSubItemTexBuffer[i], 0xc00, 'TIMG', dItem_data::getTexture(dComIfGs_getItemBeast(i)), dComIfGp_getItemIconArchive());
-                DCStoreRangeNoSync(mSubItemTexBuffer[i], 0xc00);
-                ((J2DPicture*)mE78[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
-                ((J2DPicture*)m1070[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
-                mE78[i].pane->show();
-                m1070[i].pane->show();
-                mCB8[i].pane->show();
-                mAF8[i].pane->show();
+            u8 slot = i;
+            if (dComIfGs_getItemBeast(slot) != dItemNo_NONE_e) {
+                mSubItemPane[i].mUserArea = 1;
+                JKRReadTypeResource(mSubItemTexBuffer[i], 0xc00, 'TIMG', dItem_data::getTexture(dComIfGs_getItemBeast(slot)), dComIfGp_getItemIconArchive());
+                DEMO_SELECT(DCFlushRangeNoSync, DCStoreRangeNoSync)(mSubItemTexBuffer[i], 0xc00);
+                ((J2DPicture*)mSubItemPane[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
+                ((J2DPicture*)mSubItemShadowPane[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
+                mSubItemPane[i].pane->show();
+                mSubItemShadowPane[i].pane->show();
+                mSubItemNumTensPane[i].pane->show();
+                mSubItemNumOnesPane[i].pane->show();
             } else {
-                mE78[i].mUserArea = 0;
-                mE78[i].pane->hide();
-                m1070[i].pane->hide();
-                mCB8[i].pane->hide();
-                mAF8[i].pane->hide();
+                mSubItemPane[i].mUserArea = 0;
+                mSubItemPane[i].pane->hide();
+                mSubItemShadowPane[i].pane->hide();
+                mSubItemNumTensPane[i].pane->hide();
+                mSubItemNumOnesPane[i].pane->hide();
             }
             int idx = equipBeastItem(i);
             int count = dComIfGs_getBeastNum(idx);
             if (count == 0) {
-                numberColor(mCB8[i].pane, 2);
-                numberColor(mAF8[i].pane, 2);
+                numberColor(mSubItemNumTensPane[i].pane, 2);
+                numberColor(mSubItemNumOnesPane[i].pane, 2);
             } else if (count == 0x63) {
-                numberColor(mCB8[i].pane, 1);
-                numberColor(mAF8[i].pane, 1);
+                numberColor(mSubItemNumTensPane[i].pane, 1);
+                numberColor(mSubItemNumOnesPane[i].pane, 1);
             } else {
-                numberColor(mCB8[i].pane, 0);
-                numberColor(mAF8[i].pane, 0);
+                numberColor(mSubItemNumTensPane[i].pane, 0);
+                numberColor(mSubItemNumOnesPane[i].pane, 0);
             }
             if (count < 10) {
-                mCB8[i].pane->hide();
+                mSubItemNumTensPane[i].pane->hide();
             } else {
-                numberSet(mCB8[i].pane, count / 10);
+                numberSet(mSubItemNumTensPane[i].pane, count / 10);
             }
-            numberSet(mAF8[i].pane, count % 10);
+            numberSet(mSubItemNumOnesPane[i].pane, count % 10);
         }
-    } else if (m2400[5] == 1) {
-        m2400[0] = 0x24;
-        mNowItem = m2400[0] + 3;
+    } else if (mItemState[5] == 1) {
+        mItemState[0] = 0x24;
+        mNowItem = mItemState[0] + 3;
         for (int i = 0; i < 8; i++) {
-            mCB8[i].pane->hide();
-            if (dComIfGs_getItemBait(i) != 0xff) {
-                mE78[i].mUserArea = 1;
-                JKRReadTypeResource(mSubItemTexBuffer[i], 0xc00, 'TIMG', dItem_data::getTexture(dComIfGs_getItemBait(i)), dComIfGp_getItemIconArchive());
-                DCStoreRangeNoSync(mSubItemTexBuffer[i], 0xc00);
-                ((J2DPicture*)mE78[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
-                ((J2DPicture*)m1070[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
-                mE78[i].pane->show();
-                m1070[i].pane->show();
-                if (dComIfGs_getItemBait(i) == dItemNo_BIRD_BAIT_5_e) {
-                    mAF8[i].pane->show();
+            mSubItemNumTensPane[i].pane->hide();
+            u8 slot = i;
+            if (dComIfGs_getItemBait(slot) != 0xff) {
+                mSubItemPane[i].mUserArea = 1;
+                JKRReadTypeResource(mSubItemTexBuffer[i], 0xc00, 'TIMG', dItem_data::getTexture(dComIfGs_getItemBait(slot)), dComIfGp_getItemIconArchive());
+                DEMO_SELECT(DCFlushRangeNoSync, DCStoreRangeNoSync)(mSubItemTexBuffer[i], 0xc00);
+                ((J2DPicture*)mSubItemPane[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
+                ((J2DPicture*)mSubItemShadowPane[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
+                mSubItemPane[i].pane->show();
+                mSubItemShadowPane[i].pane->show();
+                if (dComIfGs_getItemBait(slot) == dItemNo_BIRD_BAIT_5_e) {
+                    mSubItemNumOnesPane[i].pane->show();
                 } else {
-                    mAF8[i].pane->hide();
+                    mSubItemNumOnesPane[i].pane->hide();
                 }
             } else {
-                mE78[i].mUserArea = 0;
-                mE78[i].pane->hide();
-                m1070[i].pane->hide();
-                mAF8[i].pane->hide();
+                mSubItemPane[i].mUserArea = 0;
+                mSubItemPane[i].pane->hide();
+                mSubItemShadowPane[i].pane->hide();
+                mSubItemNumOnesPane[i].pane->hide();
             }
             int count = dComIfGs_getBaitNum(i);
             if (count == 0) {
-                numberColor(mCB8[i].pane, 2);
-                numberColor(mAF8[i].pane, 2);
+                numberColor(mSubItemNumTensPane[i].pane, 2);
+                numberColor(mSubItemNumOnesPane[i].pane, 2);
             } else if (count == 3) {
-                numberColor(mCB8[i].pane, 1);
-                numberColor(mAF8[i].pane, 1);
+                numberColor(mSubItemNumTensPane[i].pane, 1);
+                numberColor(mSubItemNumOnesPane[i].pane, 1);
             } else {
-                numberColor(mCB8[i].pane, 0);
-                numberColor(mAF8[i].pane, 0);
+                numberColor(mSubItemNumTensPane[i].pane, 0);
+                numberColor(mSubItemNumOnesPane[i].pane, 0);
             }
-            numberSet(mAF8[i].pane, count % 10);
+            numberSet(mSubItemNumOnesPane[i].pane, count % 10);
         }
     } else {
-        m2400[0] = 0x30;
-        mNowItem = m2400[0] + 6;
+        mItemState[0] = 0x30;
+        mNowItem = mItemState[0] + 6;
         for (int i = 0; i < 8; i++) {
-            mCB8[i].pane->hide();
-            mAF8[i].pane->hide();
-            if (dComIfGs_getItemReserve(i) != 0xff) {
-                mE78[i].mUserArea = 1;
-                JKRReadTypeResource(mSubItemTexBuffer[i], 0xc00, 'TIMG', dItem_data::getTexture(dComIfGs_getItemReserve(i)), dComIfGp_getItemIconArchive());
-                DCStoreRangeNoSync(mSubItemTexBuffer[i], 0xc00);
-                ((J2DPicture*)mE78[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
-                ((J2DPicture*)m1070[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
-                mE78[i].pane->show();
-                m1070[i].pane->show();
+            mSubItemNumTensPane[i].pane->hide();
+            mSubItemNumOnesPane[i].pane->hide();
+            u8 slot = i;
+            if (dComIfGs_getItemReserve(slot) != 0xff) {
+                mSubItemPane[i].mUserArea = 1;
+                JKRReadTypeResource(mSubItemTexBuffer[i], 0xc00, 'TIMG', dItem_data::getTexture(dComIfGs_getItemReserve(slot)), dComIfGp_getItemIconArchive());
+                DEMO_SELECT(DCFlushRangeNoSync, DCStoreRangeNoSync)(mSubItemTexBuffer[i], 0xc00);
+                ((J2DPicture*)mSubItemPane[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
+                ((J2DPicture*)mSubItemShadowPane[i].pane)->changeTexture((ResTIMG*)mSubItemTexBuffer[i], 0);
+                mSubItemPane[i].pane->show();
+                mSubItemShadowPane[i].pane->show();
             } else {
-                mE78[i].mUserArea = 0;
-                mE78[i].pane->hide();
-                m1070[i].pane->hide();
+                mSubItemPane[i].mUserArea = 0;
+                mSubItemPane[i].pane->hide();
+                mSubItemShadowPane[i].pane->hide();
             }
         }
     }
@@ -888,35 +917,34 @@ void dMenu_Item_c::subWindowInit() {
     itemnameSet();
 
     for (int i = 0; i < 8; i++) {
-        fopMsgM_paneScaleXY(&mE78[i], 1.0f);
-        fopMsgM_paneScaleXY(&m1070[i], 1.0f);
+        fopMsgM_paneScaleXY(&mSubItemPane[i], 1.0f);
+        fopMsgM_paneScaleXY(&mSubItemShadowPane[i], 1.0f);
     }
     for (int i = 0; i < 8; i++) {
-        fopMsgM_setInitAlpha(&mAF8[i]);
-        fopMsgM_setInitAlpha(&mCB8[i]);
-        fopMsgM_setInitAlpha(&mE78[i]);
-        fopMsgM_setInitAlpha(&m1070[i]);
+        fopMsgM_setInitAlpha(&mSubItemNumOnesPane[i]);
+        fopMsgM_setInitAlpha(&mSubItemNumTensPane[i]);
+        fopMsgM_setInitAlpha(&mSubItemPane[i]);
+        fopMsgM_setInitAlpha(&mSubItemShadowPane[i]);
     }
-    fopMsgM_setInitAlpha(&m1038);
-    fopMsgM_setInitAlpha(&m1230);
+    fopMsgM_setInitAlpha(&mSubItemBackPane);
+    fopMsgM_setInitAlpha(&mSubItemBackShadowPane);
     for (int i = 0; i < 9; i++) {
         fopMsgM_setInitAlpha(&m1268[i]);
     }
     fopMsgM_setInitAlpha(&m1460);
 
-    m2DPane->insertChild(mCB8[7].pane, mA18[3].pane);
-    m2DPane->insertChild(mA18[3].pane, mA18[2].pane);
-    m2DPane->insertChild(mA18[2].pane, mA18[1].pane);
-    m2DPane->insertChild(mA18[1].pane, mA18[0].pane);
-
+    m2DPane->insertChild(mSubItemNumTensPane[7].pane, mCursorPane[3].pane);
+    m2DPane->insertChild(mCursorPane[3].pane, mCursorPane[2].pane);
+    m2DPane->insertChild(mCursorPane[2].pane, mCursorPane[1].pane);
+    m2DPane->insertChild(mCursorPane[1].pane, mCursorPane[0].pane);
 }
 
 /* 801CAA04-801CAB48       .text subWindowDelete__12dMenu_Item_cFv */
 void dMenu_Item_c::subWindowDelete() {
-    (this->m858).mUserArea = 0;
-    if (this->m2400[5] == 0) {
+    (this->mItemNamePane).mUserArea = 0;
+    if (this->mItemState[5] == 0) {
         this->mNowItem = fopMsgM_itemNum(dItemNo_SPOILS_BAG_e);
-    } else if (this->m2400[5] == 1) {
+    } else if (this->mItemState[5] == 1) {
         this->mNowItem = fopMsgM_itemNum(dItemNo_BAIT_BAG_e);
     } else {
         this->mNowItem = fopMsgM_itemNum(dItemNo_DELIVERY_BAG_e);
@@ -926,63 +954,63 @@ void dMenu_Item_c::subWindowDelete() {
     dMeter_subWinFlagOff();
 
     for (int i = 0; i < 8; i++) {
-        fopMsgM_setNowAlphaZero(&mAF8[i]);
-        fopMsgM_setNowAlphaZero(&mCB8[i]);
-        fopMsgM_setNowAlphaZero(&mE78[i]);
-        fopMsgM_setNowAlphaZero(&m1070[i]);
+        fopMsgM_setNowAlphaZero(&mSubItemNumOnesPane[i]);
+        fopMsgM_setNowAlphaZero(&mSubItemNumTensPane[i]);
+        fopMsgM_setNowAlphaZero(&mSubItemPane[i]);
+        fopMsgM_setNowAlphaZero(&mSubItemShadowPane[i]);
     }
-    fopMsgM_setNowAlphaZero(&m1038);
-    fopMsgM_setNowAlphaZero(&m1230);
+    fopMsgM_setNowAlphaZero(&mSubItemBackPane);
+    fopMsgM_setNowAlphaZero(&mSubItemBackShadowPane);
     for (int i = 0; i < 9; i++) {
         fopMsgM_setNowAlphaZero(&m1268[i]);
     }
     fopMsgM_setNowAlphaZero(&this->m1460);
-    this->m2DPane->insertChild(this->m1460.pane, this->mA18[3].pane);
-    this->m2DPane->insertChild(this->mA18[3].pane, this->mA18[2].pane);
-    this->m2DPane->insertChild(this->mA18[2].pane, this->mA18[1].pane);
-    this->m2DPane->insertChild(this->mA18[1].pane, this->mA18[0].pane);
+    this->m2DPane->insertChild(this->m1460.pane, this->mCursorPane[3].pane);
+    this->m2DPane->insertChild(this->mCursorPane[3].pane, this->mCursorPane[2].pane);
+    this->m2DPane->insertChild(this->mCursorPane[2].pane, this->mCursorPane[1].pane);
+    this->m2DPane->insertChild(this->mCursorPane[1].pane, this->mCursorPane[0].pane);
 }
 
 /* 801CAB48-801CB020       .text subItemDecide__12dMenu_Item_cFv */
 void dMenu_Item_c::subItemDecide() {
-    if (m2400[4] != dItemBtn_NONE_e) {
-        dComIfGs_setSelectItem(m2400[4], m2400[1]);
-        dComIfGp_setSelectItem(m2400[4]);
-        m2400[4] = dItemBtn_NONE_e;
-        if (m2400[3] != dItemBtn_NONE_e) {
-            dComIfGs_setSelectItem(m2400[3], m2400[2]);
-            dComIfGp_setSelectItem(m2400[3]);
-            m2400[3] = dItemBtn_NONE_e;
+    if (mItemState[4] != dItemBtn_NONE_e) {
+        dComIfGs_setSelectItem(mItemState[4], mItemState[1]);
+        dComIfGp_setSelectItem(mItemState[4]);
+        mItemState[4] = dItemBtn_NONE_e;
+        if (mItemState[3] != dItemBtn_NONE_e) {
+            dComIfGs_setSelectItem(mItemState[3], mItemState[2]);
+            dComIfGp_setSelectItem(mItemState[3]);
+            mItemState[3] = dItemBtn_NONE_e;
         }
         JAIZelBasic::zel_basic->seStart(0x817, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     }
     if (CPad_CHECK_TRIG_X(0)) {
-        m2400[4] = dItemBtn_X_e;
+        mItemState[4] = dItemBtn_X_e;
     } else if (CPad_CHECK_TRIG_Y(0)) {
-        m2400[4] = dItemBtn_Y_e;
+        mItemState[4] = dItemBtn_Y_e;
     } else if (CPad_CHECK_TRIG_Z(0)) {
-        m2400[4] = dItemBtn_Z_e;
+        mItemState[4] = dItemBtn_Z_e;
     }
     u8 first, second;
-    if (m2400[4] == dItemBtn_X_e) {
+    if (mItemState[4] == dItemBtn_X_e) {
         first = dItemBtn_Y_e;
         second = dItemBtn_Z_e;
-    } else if (m2400[4] == dItemBtn_Y_e) {
+    } else if (mItemState[4] == dItemBtn_Y_e) {
         first = dItemBtn_Z_e;
         second = dItemBtn_X_e;
-    } else if (m2400[4] == dItemBtn_Z_e) {
+    } else if (mItemState[4] == dItemBtn_Z_e) {
         first = dItemBtn_X_e;
         second = dItemBtn_Y_e;
     }
     if (mNowItem == dComIfGs_getSelectItem(first)) {
-        m2400[3] = first;
-        m2400[2] = dComIfGs_getSelectItem(m2400[4]);
+        mItemState[3] = first;
+        mItemState[2] = dComIfGs_getSelectItem(mItemState[4]);
     } else if (mNowItem == dComIfGs_getSelectItem(second)) {
-        m2400[3] = second;
-        m2400[2] = dComIfGs_getSelectItem(m2400[4]);
+        mItemState[3] = second;
+        mItemState[2] = dComIfGs_getSelectItem(mItemState[4]);
     }
-    m2400[1] = mNowItem;
-    dMeter_itemMoveSet(&mE78[m2400[1] - m2400[0]], m2400[4], m2400[1]);
+    mItemState[1] = mNowItem;
+    dMeter_itemMoveSet(&mSubItemPane[mItemState[1] - mItemState[0]], mItemState[4], mItemState[1]);
     JAIZelBasic::zel_basic->seStart(0x84a, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
     if (dMeter_subWinFlag()) {
         subWindowDelete();
@@ -996,29 +1024,29 @@ inline int sub(int i_value, int i_sub) {
 
 /* 801CB020-801CB168       .text itemnameMove__12dMenu_Item_cFv */
 void dMenu_Item_c::itemnameMove() {
-    m858.mUserArea = m858.mUserArea + 1;
-    if (m858.mUserArea > 0x82) {
-        m858.mUserArea = 0xb;
+    mItemNamePane.mUserArea = mItemNamePane.mUserArea + 1;
+    if (mItemNamePane.mUserArea > 0x82) {
+        mItemNamePane.mUserArea = 0xb;
     }
-    if (m858.mUserArea <= 0xa) {
-        f32 t = fopMsgM_valueIncrease(10, m858.mUserArea, 0);
+    if (mItemNamePane.mUserArea <= 0xa) {
+        f32 t = fopMsgM_valueIncrease(10, mItemNamePane.mUserArea, 0);
         fopMsgM_setNowAlpha(&m890, t);
         fopMsgM_setNowAlpha(&m8C8, 1.0f - t);
-        fopMsgM_setNowAlphaZero(&m858);
-    } else if (m858.mUserArea <= 0x3c) {
+        fopMsgM_setNowAlphaZero(&mItemNamePane);
+    } else if (mItemNamePane.mUserArea <= 0x3c) {
         fopMsgM_setInitAlpha(&m890);
-        fopMsgM_setNowAlphaZero(&m858);
-    } else if (m858.mUserArea <= 0x46) {
-        f32 t = fopMsgM_valueIncrease(10, sub(m858.mUserArea, 0x3c), 0);
+        fopMsgM_setNowAlphaZero(&mItemNamePane);
+    } else if (mItemNamePane.mUserArea <= 0x46) {
+        f32 t = fopMsgM_valueIncrease(10, sub(mItemNamePane.mUserArea, 0x3c), 0);
         fopMsgM_setNowAlpha(&m890, 1.0f - t);
-        fopMsgM_setNowAlpha(&m858, t);
-    } else if (m858.mUserArea <= 0x78) {
+        fopMsgM_setNowAlpha(&mItemNamePane, t);
+    } else if (mItemNamePane.mUserArea <= 0x78) {
         fopMsgM_setNowAlphaZero(&m890);
-        fopMsgM_setInitAlpha(&m858);
-    } else if (m858.mUserArea <= 0x82) {
-        f32 t = fopMsgM_valueIncrease(10, sub(m858.mUserArea, 0x78), 0);
+        fopMsgM_setInitAlpha(&mItemNamePane);
+    } else if (mItemNamePane.mUserArea <= 0x82) {
+        f32 t = fopMsgM_valueIncrease(10, sub(mItemNamePane.mUserArea, 0x78), 0);
         fopMsgM_setNowAlpha(&m890, t);
-        fopMsgM_setNowAlpha(&m858, 1.0f - t);
+        fopMsgM_setNowAlpha(&mItemNamePane, 1.0f - t);
     }
     outFont->move();
 }
@@ -1033,7 +1061,7 @@ void dMenu_Item_c::itemnameSet() {
 
     size.mSizeY = 29.0f;
     size.mSizeX = 29.0f;
-    ((J2DTextBox*)m858.pane)->setFontSize(size);
+    ((J2DTextBox*)mItemNamePane.pane)->setFontSize(size);
 
     ((J2DTextBox*)m890.pane)->getFontSize(size2);
     ((J2DTextBox*)m8C8.pane)->setFontSize(size2);
@@ -1076,11 +1104,11 @@ void dMenu_Item_c::itemnameSet() {
         f32 scale = size3.mSizeY / (f32)mFont->getCellWidth();
         f32 total;
         p = msg;
+        char buf[3];
         while (*p != '\0') {
-            char buf[3];
-            buf[2] = 0;
-            buf[1] = 0;
-            buf[0] = 0;
+            buf[2] = '\0';
+            buf[1] = '\0';
+            buf[0] = '\0';
             if (*(u8*)p == 0x1a) {
                 p += 1;
                 p += (s8)*p - 1;
@@ -1091,12 +1119,12 @@ void dMenu_Item_c::itemnameSet() {
                 code = ((u8)p[0] << 8) | (u8)p[1];
                 buf[0] = p[0];
                 buf[1] = p[1];
-                buf[2] = 0;
+                buf[2] = '\0';
                 p += 2;
             } else {
-                code = *(u8*)p;
+                code = (u8)p[0];
                 buf[0] = code;
-                buf[1] = 0;
+                buf[1] = '\0';
                 p += 1;
             }
             int width = mFont->getWidth(code);
@@ -1124,7 +1152,7 @@ void dMenu_Item_c::itemnameSet() {
         } else {
             outFont->messageSet(0x1f9);
         }
-        outFont->setLeftUpPos(m858.mPosTopLeft.x, m858.mPosTopLeft.y);
+        outFont->setLeftUpPos(mItemNamePane.mPosTopLeft.x, mItemNamePane.mPosTopLeft.y);
     }
 }
 
@@ -1146,7 +1174,7 @@ void dMenu_Item_c::itemnoteSet() {
         m740.pane->show();
     }
 
-    f32 f31 = m740.pane[1].getGlbBounds().i.x;
+    f32 ruby_font_size = m740.pane[1].getGlbBounds().i.x;
 
     J2DTextBox::TFontSize size;
     size.mSizeX = g_msgHIO.field_0x70;
@@ -1184,7 +1212,7 @@ void dMenu_Item_c::itemnoteSet() {
         msgDataProc.lineSpace = ((J2DTextBox*)m778.pane)->getLineSpace();
         msgDataProc.mesgEntry = &msg_entry;
         msgDataProc.fontSize = size.mSizeX;
-        msgDataProc.rubyFontSize = f31;
+        msgDataProc.rubyFontSize = ruby_font_size;
         msgDataProc.lineWidth = 0x1FE;
         msgDataProc.centerLineWidth = 0x1E6;
         msgDataProc.sendSpeed = 2;
@@ -1196,17 +1224,17 @@ void dMenu_Item_c::itemnoteSet() {
         msgDataProc.stringShift();
         msgDataProc.iconIdxRefresh();
 
-        s16 r26 = msgDataProc.lineCount;
+        s16 line_count = msgDataProc.lineCount;
         msgDataProc.lineCount = 0;
-        f32 f30_2 = (f32)(3 - r26) * (((J2DTextBox*)m778.pane)->getLineSpace() / 2.0f);
-        ((J2DTextBox*)m740.pane)->shiftSet(0.0f, f30_2);
-        ((J2DTextBox*)m778.pane)->shiftSet(0.0f, f30_2);
+        f32 line_shift_y = (f32)(3 - line_count) * (((J2DTextBox*)m778.pane)->getLineSpace() / 2.0f);
+        ((J2DTextBox*)m740.pane)->shiftSet(0.0f, line_shift_y);
+        ((J2DTextBox*)m778.pane)->shiftSet(0.0f, line_shift_y);
         msgDataProc.stringSet();
 
         ((J2DTextBox*)m778.pane)->setString(note[0]);
         ((J2DTextBox*)m740.pane)->setString(note[1]);
 
-        int r31 = ((J2DTextBox*)m778.pane)->getLineSpace() / 2.0f;
+        int half_line_space = ((J2DTextBox*)m778.pane)->getLineSpace() / 2.0f;
         for (int i = 0; i < 0xf; i++) {
             u32 r6 = msgDataProc.field_0x281[i];
             u32 color = msgDataProc.field_0x220[i];
@@ -1223,7 +1251,7 @@ void dMenu_Item_c::itemnoteSet() {
                 continue;
             }
             m0B0[i].mPosTopLeft.x = (f32)msgDataProc.field_0x168[i];
-            m0B0[i].mPosTopLeft.y = (f32)(r31 * (3 - r26 + msgDataProc.field_0x1A4[i] * 2));
+            m0B0[i].mPosTopLeft.y = (f32)(half_line_space * (3 - line_count + msgDataProc.field_0x1A4[i] * 2));
             m0B0[i].mPosTopLeftOrig.y = (f32)r6;
 
             fopMsgM_outFontSet((J2DPicture*)m0B0[i].pane, &m0B0[i].mUserArea, color, r6);
@@ -1233,13 +1261,13 @@ void dMenu_Item_c::itemnoteSet() {
 
 /* 801CBEBC-801CBF44       .text outFontInit__12dMenu_Item_cFv */
 void dMenu_Item_c::outFontInit() {
-    J2DPane* piVar1;
+    J2DPane* font_pane;
 
     for (int i = 0; i < 15; i++) {
         this->m0B0[i].mUserArea = -1;
-        piVar1 = m0B0[i].pane;
-        piVar1->mRotation = 0.0f;
-        piVar1->calcMtx();
+        font_pane = m0B0[i].pane;
+        font_pane->mRotation = 0.0f;
+        font_pane->calcMtx();
         fopMsgM_setNowAlphaZero(&m0B0[i]);
     }
 }
@@ -1250,8 +1278,9 @@ void dMenu_Item_c::outFontMove() {
         if (this->m0B0[i].mUserArea != -1) {
             m3F8[i].mPosTopLeft.x = m0B0[i].mPosTopLeft.x + (m778.mPosTopLeft.x + (m820.mPosTopLeft.x + m7B0.mPosTopLeft.x));
             m3F8[i].mPosTopLeft.y = m0B0[i].mPosTopLeft.y + (m778.mPosTopLeft.y + (m820.mPosTopLeft.y + m7B0.mPosTopLeft.y));
+            f32 x = m820.mPosCenter.x - m3F8[i].mPosTopLeft.x;
             f32 y = m820.mPosCenter.y - m3F8[i].mPosTopLeft.y;
-            m3F8[i].pane->rotate(m820.mPosCenter.x - m3F8[i].mPosTopLeft.x, y, ROTATE_Z, m820.pane->mRotation);
+            m3F8[i].pane->rotate(x, y, ROTATE_Z, m820.pane->mRotation);
         } else {
             fopMsgM_setNowAlphaZero(&this->m0B0[i]);
         }
@@ -1296,14 +1325,14 @@ void dMenu_Item_c::noteInit() {
 
 /* 801CC1AC-801CC278       .text noteAppear__12dMenu_Item_cFv */
 void dMenu_Item_c::noteAppear() {
-    s16 sum = g_miHIO.field_0x38 + g_miHIO.field_0x3A;
+    s16 sum = g_miHIO.mNoteOpenDuration + g_miHIO.mNoteHoldDuration;
     if (m7E8.mUserArea == 1) {
         if (m7B0.mUserArea <= sum) {
             noteOpen();
         } else if (m7B0.mUserArea > sum + 1) {
             noteClose();
         } else {
-            u8 alpha = g_miHIO.field_0x5C;
+            u8 alpha = g_miHIO.mMaskAlpha;
             m970.mNowAlpha = alpha;
             m970.mInitAlpha = alpha;
             if (CPad_CHECK_TRIG_A(0) || CPad_CHECK_TRIG_B(0)) {
@@ -1317,59 +1346,60 @@ void dMenu_Item_c::noteAppear() {
 /* 801CC278-801CC4F8       .text noteOpen__12dMenu_Item_cFv */
 void dMenu_Item_c::noteOpen() {
     /* Nonmatching */
-    f32 fVar1;
-    f32 dVar11;
+    f32 ratio;
+    f32 tmp_ratio;
 
-    s32 iVar9 = (int)g_miHIO.field_0x30;
-    s16 iVar10 = (s16)(g_miHIO.field_0x38 + g_miHIO.field_0x3A);
-    f32 dx = (f32)g_miHIO.field_0x40 - (this->m820).mPosCenterOrig.x;
-    f32 dy = (f32)g_miHIO.field_0x42 - (this->m820).mPosCenterOrig.y;
-    fVar1 = 1.0f - fopMsgM_valueIncrease(iVar10, iVar10 - (this->m7B0).mUserArea, 0);
-    if ((this->m7B0).mUserArea >= iVar10) {
+    s32 iVar9 = (int)g_miHIO.mNoteOpenFinalAngle;
+    s16 open_total = (s16)(g_miHIO.mNoteOpenDuration + g_miHIO.mNoteHoldDuration);
+    f32 dx = (f32)g_miHIO.mScreenCenterX - (this->m820).mPosCenterOrig.x;
+    f32 dy = (f32)g_miHIO.mScreenCenterY - (this->m820).mPosCenterOrig.y;
+    ratio = 1.0f - fopMsgM_valueIncrease(open_total, open_total - (this->m7B0).mUserArea, 0);
+    if ((this->m7B0).mUserArea >= open_total) {
         fopMsgM_setInitAlpha(&this->m970);
         fopMsgM_setInitAlpha(&this->m740);
         fopMsgM_setInitAlpha(&this->m778);
         JAIZelBasic::zel_basic->seStart(0x814, (cXyz*)0x0, 0, 0, 1.0f, 1.0f, -1.0f, -1.0f, 0);
     } else {
-        fopMsgM_setNowAlpha(&this->m970, fVar1);
-        fopMsgM_setNowAlpha(&this->m740, fVar1);
-        fopMsgM_setNowAlpha(&this->m778, fVar1);
+        fopMsgM_setNowAlpha(&this->m970, ratio);
+        fopMsgM_setNowAlpha(&this->m740, ratio);
+        fopMsgM_setNowAlpha(&this->m778, ratio);
     }
     f32 half = 0.5f;
     this->m820.pane
-        ->rotate((this->m820).mSize.x * half, (this->m820).mSize.y * half, ROTATE_Z, (this->m820).mUserArea + fVar1 * ((iVar9 - (this->m820).mUserArea)));
+        ->rotate((this->m820).mSize.x * half, (this->m820).mSize.y * half, ROTATE_Z, (this->m820).mUserArea + ratio * (iVar9 - (this->m820).mUserArea));
     iVar9 = (this->m7B0).mUserArea;
-    if (iVar9 < g_miHIO.field_0x38) {
-        fVar1 = (g_miHIO.field_0x08 * iVar9) / g_miHIO.field_0x38;
+    if (iVar9 < g_miHIO.mNoteOpenDuration) {
+        ratio = (g_miHIO.mNoteOpenRatio * iVar9) / g_miHIO.mNoteOpenDuration;
     } else {
-        fVar1 = 1.0f - g_miHIO.field_0x08;
-        dVar11 = fopMsgM_valueIncrease(g_miHIO.field_0x3A, iVar10 - iVar9, 0);
-        dVar11 = fVar1 * (1.0f - dVar11);
-        fVar1 = g_miHIO.field_0x08 + dVar11;
+        ratio = 1.0f - g_miHIO.mNoteOpenRatio;
+        tmp_ratio = fopMsgM_valueIncrease(g_miHIO.mNoteHoldDuration, open_total - iVar9, 0);
+        tmp_ratio = ratio * (1.0f - tmp_ratio);
+        ratio = g_miHIO.mNoteOpenRatio + tmp_ratio;
     }
-    fopMsgM_paneTrans(&this->m820, dx * fVar1, dy * fVar1);
+    fopMsgM_paneTrans(&this->m820, dx * ratio, dy * ratio);
     (this->m7B0).mUserArea++;
 }
 
 /* 801CC4F8-801CC7D4       .text noteClose__12dMenu_Item_cFv */
 void dMenu_Item_c::noteClose() {
     /* Nonmatching */
-    s16 sVar3 = (int)g_miHIO.field_0x30;
-    s16 sVar7 = (int)g_miHIO.field_0x44;
-    s16 sum = (s16)(g_miHIO.field_0x38 + g_miHIO.field_0x3A);
-    s16 sVar6 = g_miHIO.field_0x3C;
-    f32 x = g_miHIO.field_0x40;
-    f32 y = g_miHIO.field_0x42;
+    s16 open_final_angle = (int)g_miHIO.mNoteOpenFinalAngle;
+    s16 close_final_angle = (int)g_miHIO.mNoteCloseAngle;
+    s16 open_total = (s16)(g_miHIO.mNoteOpenDuration + g_miHIO.mNoteHoldDuration);
+    s16 close_duration = g_miHIO.mNoteCloseDuration;
+    f32 x = g_miHIO.mScreenCenterX;
+    f32 y = g_miHIO.mScreenCenterY;
     f32 ddx = 2.0f * x - (this->m820).mPosCenterOrig.x - x;
     f32 ddy = 2.0f * y - (this->m820).mPosCenterOrig.y - y;
     f32 dx = x - (this->m820).mPosCenterOrig.x;
     f32 dy = y - (this->m820).mPosCenterOrig.y;
-    f32 ratio = fopMsgM_valueIncrease(sVar6, (this->m7B0).mUserArea - (sum + 1), 0);
+    f32 ratio = fopMsgM_valueIncrease(close_duration, (this->m7B0).mUserArea - (open_total + 1), 0);
     fopMsgM_paneTrans(&this->m820, dx + ddx * ratio, dy + ddy * ratio);
     f32 half = 0.5f;
-    this->m820.pane->rotate((this->m820).mSize.x * half, (this->m820).mSize.y * half, ROTATE_Z, sVar3 + ratio * (sVar7 - sVar3));
+    this->m820.pane
+        ->rotate((this->m820).mSize.x * half, (this->m820).mSize.y * half, ROTATE_Z, open_final_angle + ratio * (close_final_angle - open_final_angle));
     (this->m7B0).mUserArea = (this->m7B0).mUserArea + 1;
-    if ((this->m7B0).mUserArea > (s16)(sum + sVar6 + 1)) {
+    if ((this->m7B0).mUserArea > (s16)(open_total + close_duration + 1)) {
         fopMsgM_setInitAlpha(&this->m7B0);
         fopMsgM_setInitAlpha(&this->m7E8);
         fopMsgM_setInitAlpha(&this->m820);
@@ -1391,47 +1421,47 @@ void dMenu_Item_c::noteClose() {
 }
 
 /* 801CC7D4-801CC9D8       .text mainTrans__12dMenu_Item_cFff */
-void dMenu_Item_c::mainTrans(float x, float y) {
-    fopMsgM_paneTrans(&m1498, x, y);
+void dMenu_Item_c::mainTrans(f32 x, f32 y) {
+    fopMsgM_paneTrans(&mSaveIconPane, x, y);
     fopMsgM_paneTrans(&m14D0, x, y);
     fopMsgM_paneTrans(&m1508, x, y);
-    fopMsgM_paneTrans(&m1540, x, y);
-    fopMsgM_paneTrans(&m1578, x, y);
-    fopMsgM_paneTrans(&m15B0, x, y);
-    fopMsgM_paneTrans(&m15E8, x, y);
-    fopMsgM_paneTrans(&m1620, x, y);
+    fopMsgM_paneTrans(&mPictureNumPane, x, y);
+    fopMsgM_paneTrans(&mArrowNumOnesPane, x, y);
+    fopMsgM_paneTrans(&mArrowNumTensPane, x, y);
+    fopMsgM_paneTrans(&mBombNumOnesPane, x, y);
+    fopMsgM_paneTrans(&mBombNumTensPane, x, y);
     for (int i = 0; i < 21; i++) {
-        fopMsgM_paneTrans(&m1658[i], x, y);
-        fopMsgM_paneTrans(&m1AF0[i], x, y);
+        fopMsgM_paneTrans(&mItemPane[i], x, y);
+        fopMsgM_paneTrans(&mItemShadowPane[i], x, y);
     }
     for (int i = 0; i < 3; i++) {
-        fopMsgM_paneTrans(&m1F88[i], x, y);
+        fopMsgM_paneTrans(&mBowGlowPane[i], x, y);
     }
     for (int i = 0; i < 6; i++) {
-        fopMsgM_paneTrans(&m20D8[i], x, y);
+        fopMsgM_paneTrans(&mCategoryPane[i], x, y);
     }
     fopMsgM_paneTrans(&m2228, x, y);
     fopMsgM_paneTrans(&m2260, x, y);
     fopMsgM_paneTrans(&m2298, x, y);
     fopMsgM_paneTrans(&m22D0, x, y);
     for (int i = 0; i < 4; i++) {
-        fopMsgM_paneTrans(&mA18[i], x, y);
+        fopMsgM_paneTrans(&mCursorPane[i], x, y);
     }
     for (int i = 0; i < 3; i++) {
         if (dComIfGp_getSelectItem(i) != 0xFF) {
-            fopMsgM_paneTrans(&m2030[i], x, y);
+            fopMsgM_paneTrans(&mCheckMarkPane[i], x, y);
         }
     }
 }
 
 /* 801CC9D8-801CC9FC       .text titleTrans__12dMenu_Item_cFff */
-void dMenu_Item_c::titleTrans(float x, float y) {
+void dMenu_Item_c::titleTrans(f32 x, f32 y) {
     /* Nonmatching */
     fopMsgM_paneTrans(&this->m9E0, x, y);
 }
 
 /* 801CC9FC-801CCA88       .text noteRotate__12dMenu_Item_cFff */
-void dMenu_Item_c::noteRotate(float y, float x) {
+void dMenu_Item_c::noteRotate(f32 y, f32 x) {
     fopMsgM_paneTrans(&m820, 0.0f, y);
     f32 half = 0.5f;
     f32 sizeY = m820.mSize.y;
@@ -1440,9 +1470,9 @@ void dMenu_Item_c::noteRotate(float y, float x) {
 }
 
 /* 801CCA88-801CCB3C       .text nameTrans__12dMenu_Item_cFff */
-void dMenu_Item_c::nameTrans(float x, float y) {
-    fopMsgM_paneTrans(&m858, x, y);
-    outFont->setLeftUpPos(m858.mPosTopLeft.x, m858.mPosTopLeft.y);
+void dMenu_Item_c::nameTrans(f32 x, f32 y) {
+    fopMsgM_paneTrans(&mItemNamePane, x, y);
+    outFont->setLeftUpPos(mItemNamePane.mPosTopLeft.x, mItemNamePane.mPosTopLeft.y);
     outFont->move();
     fopMsgM_paneTrans(&m890, x, y);
     fopMsgM_paneTrans(&m8C8, x, y);
@@ -1451,25 +1481,25 @@ void dMenu_Item_c::nameTrans(float x, float y) {
 }
 
 /* 801CCB3C-801CCD74       .text mainOpenProc__12dMenu_Item_cFsss */
-void dMenu_Item_c::mainOpenProc(short param_0, short param_1, short param_2) {
-    if (param_1 >= param_0) {
-        f32 alpha = fopMsgM_valueIncrease(param_1, param_0, 0);
-        mainTrans(param_2 * fopMsgM_valueIncrease(param_1, param_1 - param_0, 0), 0.0f);
-        fopMsgM_setNowAlpha(&m1498, alpha);
+void dMenu_Item_c::mainOpenProc(s16 i_timer, s16 i_total, s16 i_xAmount) {
+    if (i_total >= i_timer) {
+        f32 alpha = fopMsgM_valueIncrease(i_total, i_timer, 0);
+        mainTrans(i_xAmount * fopMsgM_valueIncrease(i_total, i_total - i_timer, 0), 0.0f);
+        fopMsgM_setNowAlpha(&mSaveIconPane, alpha);
         fopMsgM_setNowAlpha(&m14D0, alpha);
         fopMsgM_setNowAlpha(&m1508, alpha);
-        fopMsgM_setNowAlpha(&m1540, alpha);
-        fopMsgM_setNowAlpha(&m1578, alpha);
-        fopMsgM_setNowAlpha(&m15B0, alpha);
-        fopMsgM_setNowAlpha(&m15E8, alpha);
-        fopMsgM_setNowAlpha(&m1620, alpha);
+        fopMsgM_setNowAlpha(&mPictureNumPane, alpha);
+        fopMsgM_setNowAlpha(&mArrowNumOnesPane, alpha);
+        fopMsgM_setNowAlpha(&mArrowNumTensPane, alpha);
+        fopMsgM_setNowAlpha(&mBombNumOnesPane, alpha);
+        fopMsgM_setNowAlpha(&mBombNumTensPane, alpha);
         for (int i = 0; i < 21; i++) {
-            fopMsgM_setNowAlpha(&m1658[i], alpha);
-            fopMsgM_setNowAlpha(&m1AF0[i], alpha);
+            fopMsgM_setNowAlpha(&mItemPane[i], alpha);
+            fopMsgM_setNowAlpha(&mItemShadowPane[i], alpha);
         }
         for (int i = 0; i < 6; i++) {
             if (itemplaceCheck(i)) {
-                fopMsgM_setNowAlpha(&m20D8[i], alpha);
+                fopMsgM_setNowAlpha(&mCategoryPane[i], alpha);
             }
         }
         fopMsgM_setNowAlpha(&m2228, alpha);
@@ -1477,48 +1507,48 @@ void dMenu_Item_c::mainOpenProc(short param_0, short param_1, short param_2) {
         fopMsgM_setNowAlpha(&m2298, alpha);
         fopMsgM_setNowAlpha(&m22D0, alpha);
         for (int i = 0; i < 4; i++) {
-            fopMsgM_setNowAlpha(&mA18[i], alpha);
+            fopMsgM_setNowAlpha(&mCursorPane[i], alpha);
         }
         for (int i = 0; i < 3; i++) {
-            fopMsgM_setNowAlpha(&m1F88[i], alpha);
-            fopMsgM_setNowAlpha(&m2030[i], alpha);
+            fopMsgM_setNowAlpha(&mBowGlowPane[i], alpha);
+            fopMsgM_setNowAlpha(&mCheckMarkPane[i], alpha);
             if (dComIfGp_getSelectItem(i) != 0xFF) {
-                m2030[i].pane->show();
+                mCheckMarkPane[i].pane->show();
             } else {
-                m2030[i].pane->hide();
+                mCheckMarkPane[i].pane->hide();
             }
         }
     }
 }
 
 /* 801CCD74-801CCE5C       .text titleOpenProc__12dMenu_Item_cFss */
-void dMenu_Item_c::titleOpenProc(short param_1, short param_2) {
+void dMenu_Item_c::titleOpenProc(s16 i_timer, s16 i_total) {
     /* Nonmatching */
-    s16 sVar1 = g_miHIO.field_0x28 + 0;
-    if (param_2 >= param_1) {
-        fopMsgM_valueIncrease(param_2, param_1, 0);
-        titleTrans(0.0f, sVar1 * fopMsgM_valueIncrease(param_2, param_2 - param_1, 0));
+    s16 slide_amount = g_miHIO.mTitleSlideY + 0;
+    if (i_total >= i_timer) {
+        fopMsgM_valueIncrease(i_total, i_timer, 0);
+        titleTrans(0.0f, slide_amount * fopMsgM_valueIncrease(i_total, i_total - i_timer, 0));
         fopMsgM_setInitAlpha(&this->m9A8);
         fopMsgM_setInitAlpha(&this->m9E0);
-        if (param_1 == 1) {
+        if (i_timer == 1) {
             JAIZelBasic::zel_basic->seStart(0x811, (cXyz*)0x0, 0, 0, 1.0f, 1.0f, -1.0f, -1.0f, 0);
         }
     }
 }
 
 /* 801CCE5C-801CCF50       .text noteOpenProc__12dMenu_Item_cFss */
-void dMenu_Item_c::noteOpenProc(short param_1, short param_2) {
+void dMenu_Item_c::noteOpenProc(s16 i_timer, s16 i_total) {
     /* Nonmatching */
-    int iVar2;
-    int iVar1;
-    f32 dVar5;
+    int target_angle;
+    int slide_amount;
+    f32 ratio;
 
-    iVar2 = g_miHIO.field_0x2A;
-    iVar1 = g_miHIO.field_0x3E;
-    if (param_2 >= param_1) {
-        fopMsgM_valueIncrease(param_2, param_1, 0);
-        dVar5 = fopMsgM_valueIncrease(param_2, param_2 - param_1, 0);
-        noteRotate(iVar1 * dVar5, m820.mUserArea + dVar5 * (iVar2 - m820.mUserArea));
+    target_angle = g_miHIO.mNoteOpenAngle;
+    slide_amount = g_miHIO.mNoteSlideY;
+    if (i_total >= i_timer) {
+        fopMsgM_valueIncrease(i_total, i_timer, 0);
+        ratio = fopMsgM_valueIncrease(i_total, i_total - i_timer, 0);
+        noteRotate(slide_amount * ratio, m820.mUserArea + ratio * (target_angle - m820.mUserArea));
         for (int i = 0; i < 6; i++) {
             fopMsgM_setInitAlpha(&m7B0);
             fopMsgM_setInitAlpha(&m7E8);
@@ -1527,11 +1557,11 @@ void dMenu_Item_c::noteOpenProc(short param_1, short param_2) {
 }
 
 /* 801CCF50-801CD004       .text nameOpenProc__12dMenu_Item_cFss */
-void dMenu_Item_c::nameOpenProc(short param_1, short param_2) {
-    s16 sVar1 = g_miHIO.field_0x2C + 0;
-    if (param_2 >= param_1) {
-        fopMsgM_valueIncrease(param_2, param_1, 0);
-        nameTrans(0.0f, sVar1 * fopMsgM_valueIncrease(param_2, param_2 - param_1, 0));
+void dMenu_Item_c::nameOpenProc(s16 i_timer, s16 i_total) {
+    s16 slide_amount = g_miHIO.mNameSlideY + 0;
+    if (i_total >= i_timer) {
+        fopMsgM_valueIncrease(i_total, i_timer, 0);
+        nameTrans(0.0f, slide_amount * fopMsgM_valueIncrease(i_total, i_total - i_timer, 0));
         fopMsgM_setInitAlpha(&m890);
         fopMsgM_setInitAlpha(&m900);
         fopMsgM_setInitAlpha(&m938);
@@ -1581,53 +1611,53 @@ void dMenu_Item_c::numberColor(J2DPane* pane, u8 mode) {
 void dMenu_Item_c::itemNumberSet() {
     dSv_player_c& player = g_dComIfG_gameInfo.save.getSavedata().getPlayer();
 
-    numberSet(m1540.pane, player.getItemRecord().getPictureNum());
+    numberSet(mPictureNumPane.pane, player.getItemRecord().getPictureNum());
     if (player.getItemRecord().getPictureNum() == 0) {
-        numberColor(m1540.pane, 2);
+        numberColor(mPictureNumPane.pane, 2);
     } else if (player.getItemRecord().getPictureNum() == 3) {
-        numberColor(m1540.pane, 1);
+        numberColor(mPictureNumPane.pane, 1);
     } else {
-        numberColor(m1540.pane, 0);
+        numberColor(mPictureNumPane.pane, 0);
     }
-    m2400[0x1e] = player.getItemRecord().getPictureNum();
+    mItemState[0x1e] = player.getItemRecord().getPictureNum();
 
     u8 arrowNum = player.getItemRecord().getArrowNum();
     if (arrowNum == 0) {
-        numberColor(m1578.pane, 2);
-        numberColor(m15B0.pane, 2);
+        numberColor(mArrowNumOnesPane.pane, 2);
+        numberColor(mArrowNumTensPane.pane, 2);
     } else if (arrowNum == dComIfGs_getArrowMax()) {
-        numberColor(m1578.pane, 1);
-        numberColor(m15B0.pane, 1);
+        numberColor(mArrowNumOnesPane.pane, 1);
+        numberColor(mArrowNumTensPane.pane, 1);
     } else {
-        numberColor(m1578.pane, 0);
-        numberColor(m15B0.pane, 0);
+        numberColor(mArrowNumOnesPane.pane, 0);
+        numberColor(mArrowNumTensPane.pane, 0);
     }
     if (player.getItemRecord().getArrowNum() < 10) {
-        m15B0.pane->hide();
+        mArrowNumTensPane.pane->hide();
     } else {
-        numberSet(m15B0.pane, player.getItemRecord().getArrowNum() / 10);
+        numberSet(mArrowNumTensPane.pane, player.getItemRecord().getArrowNum() / 10);
     }
-    numberSet(m1578.pane, player.getItemRecord().getArrowNum() % 10);
-    m2400[0x1f] = player.getItemRecord().getArrowNum();
+    numberSet(mArrowNumOnesPane.pane, player.getItemRecord().getArrowNum() % 10);
+    mItemState[0x1f] = player.getItemRecord().getArrowNum();
 
     u8 bombNum = player.getItemRecord().getBombNum();
     if (bombNum == 0) {
-        numberColor(m15E8.pane, 2);
-        numberColor(m1620.pane, 2);
+        numberColor(mBombNumOnesPane.pane, 2);
+        numberColor(mBombNumTensPane.pane, 2);
     } else if (bombNum == dComIfGs_getBombMax()) {
-        numberColor(m15E8.pane, 1);
-        numberColor(m1620.pane, 1);
+        numberColor(mBombNumOnesPane.pane, 1);
+        numberColor(mBombNumTensPane.pane, 1);
     } else {
-        numberColor(m15E8.pane, 0);
-        numberColor(m1620.pane, 0);
+        numberColor(mBombNumOnesPane.pane, 0);
+        numberColor(mBombNumTensPane.pane, 0);
     }
     if (player.getItemRecord().getBombNum() < 10) {
-        m1620.pane->hide();
+        mBombNumTensPane.pane->hide();
     } else {
-        numberSet(m1620.pane, player.getItemRecord().getBombNum() / 10);
+        numberSet(mBombNumTensPane.pane, player.getItemRecord().getBombNum() / 10);
     }
-    numberSet(m15E8.pane, player.getItemRecord().getBombNum() % 10);
-    m2400[0x20] = player.getItemRecord().getBombNum();
+    numberSet(mBombNumOnesPane.pane, player.getItemRecord().getBombNum() % 10);
+    mItemState[0x20] = player.getItemRecord().getBombNum();
 }
 
 /* 801CD3FC-801CDA14       .text itemCheck__12dMenu_Item_cFi */
@@ -1635,26 +1665,24 @@ void dMenu_Item_c::itemCheck(int i_no) {
     u8 itemNo = dComIfGs_getItem(i_no);
     if (itemNo != dItemNo_NONE_e) {
         if (recollectBossCheck() && (itemNo == dItemNo_WATER_BOTTLE_e || itemNo == dItemNo_FIREFLY_BOTTLE_e || itemNo == dItemNo_FOREST_WATER_e)) {
-            m1658[i_no].pane->hide();
-            m1AF0[i_no].pane->hide();
+            mItemPane[i_no].pane->hide();
+            mItemShadowPane[i_no].pane->hide();
         }
         if (itemNo == dItemNo_MAGIC_ARROW_e) {
-            m1F88[0].pane->show();
-            m1F88[1].pane->show();
-            m1F88[2].pane->hide();
+            mBowGlowPane[0].pane->show();
+            mBowGlowPane[1].pane->show();
+            mBowGlowPane[2].pane->hide();
             itemNo = dItemNo_BOW_e;
         } else if (itemNo == dItemNo_LIGHT_ARROW_e) {
-            m1F88[0].pane->show();
-            m1F88[1].pane->show();
-            m1F88[2].pane->show();
+            mBowGlowPane[0].pane->show();
+            mBowGlowPane[1].pane->show();
+            mBowGlowPane[2].pane->show();
             itemNo = dItemNo_BOW_e;
-        } else if (
-            itemNo == dItemNo_FOREST_WATER_e &&
-            !(recollectBossCheck() && (itemNo == dItemNo_WATER_BOTTLE_e || itemNo == dItemNo_FIREFLY_BOTTLE_e || itemNo == dItemNo_FOREST_WATER_e))
-        )
+        } else if (itemNo == dItemNo_FOREST_WATER_e &&
+                   !(recollectBossCheck() && (itemNo == dItemNo_WATER_BOTTLE_e || itemNo == dItemNo_FIREFLY_BOTTLE_e || itemNo == dItemNo_FOREST_WATER_e)))
         {
             cXyz pos;
-            pos.set(m1658[i_no].mPosCenter.x - 320.0f, m1658[i_no].mPosCenter.y - 240.0f, 0.0f);
+            pos.set(mItemPane[i_no].mPosCenter.x - 320.0f, mItemPane[i_no].mPosCenter.y - 240.0f, 0.0f);
             if (mpEmitter[0] == NULL) {
                 mpEmitter[0] = dComIfGp_particle_set2DmenuFore(0x2d, &pos);
             }
@@ -1664,63 +1692,63 @@ void dMenu_Item_c::itemCheck(int i_no) {
         }
         JKRReadTypeResource(mItemTexBuffer[i_no], 0xc00, 'TIMG', dItem_data::getTexture(itemNo), dComIfGp_getItemIconArchive());
         DCStoreRangeNoSync(mItemTexBuffer[i_no], 0xc00);
-        ((J2DPicture*)m1658[i_no].pane)->changeTexture((ResTIMG*)mItemTexBuffer[i_no], 0);
-        ((J2DPicture*)m1AF0[i_no].pane)->changeTexture((ResTIMG*)mItemTexBuffer[i_no], 0);
+        ((J2DPicture*)mItemPane[i_no].pane)->changeTexture((ResTIMG*)mItemTexBuffer[i_no], 0);
+        ((J2DPicture*)mItemShadowPane[i_no].pane)->changeTexture((ResTIMG*)mItemTexBuffer[i_no], 0);
         if (i_no == 8) {
             if (dComIfGs_getItem(i_no) == dItemNo_PICTO_BOX_e) {
-                m1658[i_no].pane->show();
-                m1AF0[i_no].pane->show();
-                m1540.pane->show();
+                mItemPane[i_no].pane->show();
+                mItemShadowPane[i_no].pane->show();
+                mPictureNumPane.pane->show();
             } else if (dComIfGs_getItem(i_no) == dItemNo_DELUXE_PICTO_BOX_e) {
-                m1658[i_no].pane->show();
-                m1AF0[i_no].pane->show();
-                m1540.pane->show();
+                mItemPane[i_no].pane->show();
+                mItemShadowPane[i_no].pane->show();
+                mPictureNumPane.pane->show();
             } else {
-                m1658[i_no].pane->hide();
-                m1AF0[i_no].pane->hide();
-                m1540.pane->hide();
+                mItemPane[i_no].pane->hide();
+                mItemShadowPane[i_no].pane->hide();
+                mPictureNumPane.pane->hide();
             }
         }
-        m2400[i_no + 6] = dComIfGs_getItem(i_no);
+        mItemState[i_no + 6] = dComIfGs_getItem(i_no);
     } else {
-        m1658[i_no].pane->hide();
-        m1AF0[i_no].pane->hide();
+        mItemPane[i_no].pane->hide();
+        mItemShadowPane[i_no].pane->hide();
         if (i_no == 8) {
-            m1540.pane->hide();
+            mPictureNumPane.pane->hide();
         } else if (i_no == 0xc) {
-            m1578.pane->hide();
-            m15B0.pane->hide();
+            mArrowNumOnesPane.pane->hide();
+            mArrowNumTensPane.pane->hide();
         } else if (i_no == 0xd) {
-            m15E8.pane->hide();
-            m1620.pane->hide();
+            mBombNumOnesPane.pane->hide();
+            mBombNumTensPane.pane->hide();
         }
     }
 }
 
 /* 801CDA14-801CDB14       .text itemBitCheck__12dMenu_Item_cFb */
-void dMenu_Item_c::itemBitCheck(bool param_1) {
+void dMenu_Item_c::itemBitCheck(bool i_force) {
     /* Nonmatching */
-    u8 dVar1;
-    dSv_player_item_c* pdVar2;
-    int iVar3 = 0;
-    pdVar2 = &g_dComIfG_gameInfo.save.getSavedata().getPlayer().getItem();
-    for (; iVar3 < 21; iVar3++) {
-        dVar1 = dComIfGs_getItem(iVar3);
-        if ((this->m2400[iVar3 + 6] != dVar1) || (param_1)) {
-            itemCheck(iVar3);
+    u8 item_no;
+    dSv_player_item_c* item_ptr;
+    int i = 0;
+    item_ptr = &g_dComIfG_gameInfo.save.getSavedata().getPlayer().getItem();
+    for (; i < 21; i++) {
+        item_no = dComIfGs_getItem(i);
+        if ((this->mItemState[i + 6] != item_no) || (i_force)) {
+            itemCheck(i);
         }
-        pdVar2 = (dSv_player_item_c*)(pdVar2->mItems + 1);
+        item_ptr = (dSv_player_item_c*)(item_ptr->mItems + 1);
     }
 }
 
 /* 801CDB14-801CDC34       .text arrowLightAnime__12dMenu_Item_cFv */
 void dMenu_Item_c::arrowLightAnime() {
     /* Nonmatching */
-    this->m1F88[0].mUserArea++;
-    if (this->m1F88[0].mUserArea >= 0x78) {
-        this->m1F88[0].mUserArea = 0;
+    this->mBowGlowPane[0].mUserArea++;
+    if (this->mBowGlowPane[0].mUserArea >= 0x78) {
+        this->mBowGlowPane[0].mUserArea = 0;
     }
-    s16 count = this->m1F88[0].mUserArea;
+    s16 count = this->mBowGlowPane[0].mUserArea;
     f32 rate;
     if (count < 0x3c) {
         rate = fopMsgM_valueIncrease(0x3c, count, 0);
@@ -1728,11 +1756,11 @@ void dMenu_Item_c::arrowLightAnime() {
         rate = fopMsgM_valueIncrease(0x3c, 0x78 - count, 0);
     }
     f32 scale = 1.0f - rate * 0.39999998f;
-    u8 alpha = this->m1F88[0].mInitAlpha;
+    u8 alpha = this->mBowGlowPane[0].mInitAlpha;
     f32 newAlpha = alpha - (alpha - 50.0f) * rate;
     for (int i = 0; i < 3; i++) {
-        fopMsgM_paneScaleXY(&this->m1F88[i], scale);
-        this->m1F88[i].mNowAlpha = newAlpha;
+        fopMsgM_paneScaleXY(&this->mBowGlowPane[i], scale);
+        this->mBowGlowPane[i].mNowAlpha = newAlpha;
     }
 }
 
@@ -1766,92 +1794,92 @@ void dMenu_Item_c::cornerMove() {
     J2DWindow::TContentsColor contents;
     JUtility::TColor white;
 
-    m23FA[0]++;
-    if (m23FA[0] >= 0xF0) {
-        m23FA[0] = 0;
+    mCornerAnimTimer[0]++;
+    if (mCornerAnimTimer[0] >= 0xF0) {
+        mCornerAnimTimer[0] = 0;
     }
 
-    f32 t = fopMsgM_valueIncrease(0x3C, m23FA[0] % 0x3C, 2);
-    if (m23FA[0] < 0x3C) {
-        contents.mTL.r = color_0x2320.r + t * (color_0x2328.r - color_0x2320.r);
-        contents.mTL.g = color_0x2320.g + t * (color_0x2328.g - color_0x2320.g);
-        contents.mTL.b = color_0x2320.b + t * (color_0x2328.b - color_0x2320.b);
-        contents.mTL.a = color_0x2320.a + t * (color_0x2328.a - color_0x2320.a);
-        contents.mTR.r = color_0x2324.r + t * (color_0x2320.r - color_0x2324.r);
-        contents.mTR.g = color_0x2324.g + t * (color_0x2320.g - color_0x2324.g);
-        contents.mTR.b = color_0x2324.b + t * (color_0x2320.b - color_0x2324.b);
-        contents.mTR.a = color_0x2324.a + t * (color_0x2320.a - color_0x2324.a);
-        contents.mBL.r = color_0x2328.r + t * (color_0x232C.r - color_0x2328.r);
-        contents.mBL.g = color_0x2328.g + t * (color_0x232C.g - color_0x2328.g);
-        contents.mBL.b = color_0x2328.b + t * (color_0x232C.b - color_0x2328.b);
-        contents.mBL.a = color_0x2328.a + t * (color_0x232C.a - color_0x2328.a);
-        contents.mBR.r = color_0x232C.r + t * (color_0x2324.r - color_0x232C.r);
-        contents.mBR.g = color_0x232C.g + t * (color_0x2324.g - color_0x232C.g);
-        contents.mBR.b = color_0x232C.b + t * (color_0x2324.b - color_0x232C.b);
-        contents.mBR.a = color_0x232C.a + t * (color_0x2324.a - color_0x232C.a);
-    } else if (m23FA[0] < 0x78) {
-        contents.mTR.r = color_0x2320.r + t * (color_0x2328.r - color_0x2320.r);
-        contents.mTR.g = color_0x2320.g + t * (color_0x2328.g - color_0x2320.g);
-        contents.mTR.b = color_0x2320.b + t * (color_0x2328.b - color_0x2320.b);
-        contents.mTR.a = color_0x2320.a + t * (color_0x2328.a - color_0x2320.a);
-        contents.mBR.r = color_0x2324.r + t * (color_0x2320.r - color_0x2324.r);
-        contents.mBR.g = color_0x2324.g + t * (color_0x2320.g - color_0x2324.g);
-        contents.mBR.b = color_0x2324.b + t * (color_0x2320.b - color_0x2324.b);
-        contents.mBR.a = color_0x2324.a + t * (color_0x2320.a - color_0x2324.a);
-        contents.mTL.r = color_0x2328.r + t * (color_0x232C.r - color_0x2328.r);
-        contents.mTL.g = color_0x2328.g + t * (color_0x232C.g - color_0x2328.g);
-        contents.mTL.b = color_0x2328.b + t * (color_0x232C.b - color_0x2328.b);
-        contents.mTL.a = color_0x2328.a + t * (color_0x232C.a - color_0x2328.a);
-        contents.mBL.r = color_0x232C.r + t * (color_0x2324.r - color_0x232C.r);
-        contents.mBL.g = color_0x232C.g + t * (color_0x2324.g - color_0x232C.g);
-        contents.mBL.b = color_0x232C.b + t * (color_0x2324.b - color_0x232C.b);
-        contents.mBL.a = color_0x232C.a + t * (color_0x2324.a - color_0x232C.a);
-    } else if (m23FA[0] < 0xB4) {
-        contents.mBR.r = color_0x2320.r + t * (color_0x2328.r - color_0x2320.r);
-        contents.mBR.g = color_0x2320.g + t * (color_0x2328.g - color_0x2320.g);
-        contents.mBR.b = color_0x2320.b + t * (color_0x2328.b - color_0x2320.b);
-        contents.mBR.a = color_0x2320.a + t * (color_0x2328.a - color_0x2320.a);
-        contents.mBL.r = color_0x2324.r + t * (color_0x2320.r - color_0x2324.r);
-        contents.mBL.g = color_0x2324.g + t * (color_0x2320.g - color_0x2324.g);
-        contents.mBL.b = color_0x2324.b + t * (color_0x2320.b - color_0x2324.b);
-        contents.mBL.a = color_0x2324.a + t * (color_0x2320.a - color_0x2324.a);
-        contents.mTR.r = color_0x2328.r + t * (color_0x232C.r - color_0x2328.r);
-        contents.mTR.g = color_0x2328.g + t * (color_0x232C.g - color_0x2328.g);
-        contents.mTR.b = color_0x2328.b + t * (color_0x232C.b - color_0x2328.b);
-        contents.mTR.a = color_0x2328.a + t * (color_0x232C.a - color_0x2328.a);
-        contents.mTL.r = color_0x232C.r + t * (color_0x2324.r - color_0x232C.r);
-        contents.mTL.g = color_0x232C.g + t * (color_0x2324.g - color_0x232C.g);
-        contents.mTL.b = color_0x232C.b + t * (color_0x2324.b - color_0x232C.b);
-        contents.mTL.a = color_0x232C.a + t * (color_0x2324.a - color_0x232C.a);
+    f32 t = fopMsgM_valueIncrease(0x3C, mCornerAnimTimer[0] % 0x3C, 2);
+    if (mCornerAnimTimer[0] < 0x3C) {
+        contents.mTL.r = mCornerColorTL.r + t * (mCornerColorBL.r - mCornerColorTL.r);
+        contents.mTL.g = mCornerColorTL.g + t * (mCornerColorBL.g - mCornerColorTL.g);
+        contents.mTL.b = mCornerColorTL.b + t * (mCornerColorBL.b - mCornerColorTL.b);
+        contents.mTL.a = mCornerColorTL.a + t * (mCornerColorBL.a - mCornerColorTL.a);
+        contents.mTR.r = mCornerColorTR.r + t * (mCornerColorTL.r - mCornerColorTR.r);
+        contents.mTR.g = mCornerColorTR.g + t * (mCornerColorTL.g - mCornerColorTR.g);
+        contents.mTR.b = mCornerColorTR.b + t * (mCornerColorTL.b - mCornerColorTR.b);
+        contents.mTR.a = mCornerColorTR.a + t * (mCornerColorTL.a - mCornerColorTR.a);
+        contents.mBL.r = mCornerColorBL.r + t * (mCornerColorBR.r - mCornerColorBL.r);
+        contents.mBL.g = mCornerColorBL.g + t * (mCornerColorBR.g - mCornerColorBL.g);
+        contents.mBL.b = mCornerColorBL.b + t * (mCornerColorBR.b - mCornerColorBL.b);
+        contents.mBL.a = mCornerColorBL.a + t * (mCornerColorBR.a - mCornerColorBL.a);
+        contents.mBR.r = mCornerColorBR.r + t * (mCornerColorTR.r - mCornerColorBR.r);
+        contents.mBR.g = mCornerColorBR.g + t * (mCornerColorTR.g - mCornerColorBR.g);
+        contents.mBR.b = mCornerColorBR.b + t * (mCornerColorTR.b - mCornerColorBR.b);
+        contents.mBR.a = mCornerColorBR.a + t * (mCornerColorTR.a - mCornerColorBR.a);
+    } else if (mCornerAnimTimer[0] < 0x78) {
+        contents.mTR.r = mCornerColorTL.r + t * (mCornerColorBL.r - mCornerColorTL.r);
+        contents.mTR.g = mCornerColorTL.g + t * (mCornerColorBL.g - mCornerColorTL.g);
+        contents.mTR.b = mCornerColorTL.b + t * (mCornerColorBL.b - mCornerColorTL.b);
+        contents.mTR.a = mCornerColorTL.a + t * (mCornerColorBL.a - mCornerColorTL.a);
+        contents.mBR.r = mCornerColorTR.r + t * (mCornerColorTL.r - mCornerColorTR.r);
+        contents.mBR.g = mCornerColorTR.g + t * (mCornerColorTL.g - mCornerColorTR.g);
+        contents.mBR.b = mCornerColorTR.b + t * (mCornerColorTL.b - mCornerColorTR.b);
+        contents.mBR.a = mCornerColorTR.a + t * (mCornerColorTL.a - mCornerColorTR.a);
+        contents.mTL.r = mCornerColorBL.r + t * (mCornerColorBR.r - mCornerColorBL.r);
+        contents.mTL.g = mCornerColorBL.g + t * (mCornerColorBR.g - mCornerColorBL.g);
+        contents.mTL.b = mCornerColorBL.b + t * (mCornerColorBR.b - mCornerColorBL.b);
+        contents.mTL.a = mCornerColorBL.a + t * (mCornerColorBR.a - mCornerColorBL.a);
+        contents.mBL.r = mCornerColorBR.r + t * (mCornerColorTR.r - mCornerColorBR.r);
+        contents.mBL.g = mCornerColorBR.g + t * (mCornerColorTR.g - mCornerColorBR.g);
+        contents.mBL.b = mCornerColorBR.b + t * (mCornerColorTR.b - mCornerColorBR.b);
+        contents.mBL.a = mCornerColorBR.a + t * (mCornerColorTR.a - mCornerColorBR.a);
+    } else if (mCornerAnimTimer[0] < 0xB4) {
+        contents.mBR.r = mCornerColorTL.r + t * (mCornerColorBL.r - mCornerColorTL.r);
+        contents.mBR.g = mCornerColorTL.g + t * (mCornerColorBL.g - mCornerColorTL.g);
+        contents.mBR.b = mCornerColorTL.b + t * (mCornerColorBL.b - mCornerColorTL.b);
+        contents.mBR.a = mCornerColorTL.a + t * (mCornerColorBL.a - mCornerColorTL.a);
+        contents.mBL.r = mCornerColorTR.r + t * (mCornerColorTL.r - mCornerColorTR.r);
+        contents.mBL.g = mCornerColorTR.g + t * (mCornerColorTL.g - mCornerColorTR.g);
+        contents.mBL.b = mCornerColorTR.b + t * (mCornerColorTL.b - mCornerColorTR.b);
+        contents.mBL.a = mCornerColorTR.a + t * (mCornerColorTL.a - mCornerColorTR.a);
+        contents.mTR.r = mCornerColorBL.r + t * (mCornerColorBR.r - mCornerColorBL.r);
+        contents.mTR.g = mCornerColorBL.g + t * (mCornerColorBR.g - mCornerColorBL.g);
+        contents.mTR.b = mCornerColorBL.b + t * (mCornerColorBR.b - mCornerColorBL.b);
+        contents.mTR.a = mCornerColorBL.a + t * (mCornerColorBR.a - mCornerColorBL.a);
+        contents.mTL.r = mCornerColorBR.r + t * (mCornerColorTR.r - mCornerColorBR.r);
+        contents.mTL.g = mCornerColorBR.g + t * (mCornerColorTR.g - mCornerColorBR.g);
+        contents.mTL.b = mCornerColorBR.b + t * (mCornerColorTR.b - mCornerColorBR.b);
+        contents.mTL.a = mCornerColorBR.a + t * (mCornerColorTR.a - mCornerColorBR.a);
     } else {
-        contents.mBL.r = color_0x2320.r + t * (color_0x2328.r - color_0x2320.r);
-        contents.mBL.g = color_0x2320.g + t * (color_0x2328.g - color_0x2320.g);
-        contents.mBL.b = color_0x2320.b + t * (color_0x2328.b - color_0x2320.b);
-        contents.mBL.a = color_0x2320.a + t * (color_0x2328.a - color_0x2320.a);
-        contents.mTL.r = color_0x2324.r + t * (color_0x2320.r - color_0x2324.r);
-        contents.mTL.g = color_0x2324.g + t * (color_0x2320.g - color_0x2324.g);
-        contents.mTL.b = color_0x2324.b + t * (color_0x2320.b - color_0x2324.b);
-        contents.mTL.a = color_0x2324.a + t * (color_0x2320.a - color_0x2324.a);
-        contents.mBR.r = color_0x2328.r + t * (color_0x232C.r - color_0x2328.r);
-        contents.mBR.g = color_0x2328.g + t * (color_0x232C.g - color_0x2328.g);
-        contents.mBR.b = color_0x2328.b + t * (color_0x232C.b - color_0x2328.b);
-        contents.mBR.a = color_0x2328.a + t * (color_0x232C.a - color_0x2328.a);
-        contents.mTR.r = color_0x232C.r + t * (color_0x2324.r - color_0x232C.r);
-        contents.mTR.g = color_0x232C.g + t * (color_0x2324.g - color_0x232C.g);
-        contents.mTR.b = color_0x232C.b + t * (color_0x2324.b - color_0x232C.b);
-        contents.mTR.a = color_0x232C.a + t * (color_0x2324.a - color_0x232C.a);
+        contents.mBL.r = mCornerColorTL.r + t * (mCornerColorBL.r - mCornerColorTL.r);
+        contents.mBL.g = mCornerColorTL.g + t * (mCornerColorBL.g - mCornerColorTL.g);
+        contents.mBL.b = mCornerColorTL.b + t * (mCornerColorBL.b - mCornerColorTL.b);
+        contents.mBL.a = mCornerColorTL.a + t * (mCornerColorBL.a - mCornerColorTL.a);
+        contents.mTL.r = mCornerColorTR.r + t * (mCornerColorTL.r - mCornerColorTR.r);
+        contents.mTL.g = mCornerColorTR.g + t * (mCornerColorTL.g - mCornerColorTR.g);
+        contents.mTL.b = mCornerColorTR.b + t * (mCornerColorTL.b - mCornerColorTR.b);
+        contents.mTL.a = mCornerColorTR.a + t * (mCornerColorTL.a - mCornerColorTR.a);
+        contents.mBR.r = mCornerColorBL.r + t * (mCornerColorBR.r - mCornerColorBL.r);
+        contents.mBR.g = mCornerColorBL.g + t * (mCornerColorBR.g - mCornerColorBL.g);
+        contents.mBR.b = mCornerColorBL.b + t * (mCornerColorBR.b - mCornerColorBL.b);
+        contents.mBR.a = mCornerColorBL.a + t * (mCornerColorBR.a - mCornerColorBL.a);
+        contents.mTR.r = mCornerColorBR.r + t * (mCornerColorTR.r - mCornerColorBR.r);
+        contents.mTR.g = mCornerColorBR.g + t * (mCornerColorTR.g - mCornerColorBR.g);
+        contents.mTR.b = mCornerColorBR.b + t * (mCornerColorTR.b - mCornerColorBR.b);
+        contents.mTR.a = mCornerColorBR.a + t * (mCornerColorTR.a - mCornerColorBR.a);
     }
 
     ((J2DWindow*)m14D0.pane)->setContentsColor(contents);
 
-    m23FA[1]++;
-    if (m23FA[1] >= 0x28) {
-        m23FA[1] = 0;
+    mCornerAnimTimer[1]++;
+    if (mCornerAnimTimer[1] >= 0x28) {
+        mCornerAnimTimer[1] = 0;
     }
-    if (m23FA[1] < 0x14) {
-        t = fopMsgM_valueIncrease(0x14, m23FA[1], 0);
+    if (mCornerAnimTimer[1] < 0x14) {
+        t = fopMsgM_valueIncrease(0x14, mCornerAnimTimer[1], 0);
     } else {
-        t = fopMsgM_valueIncrease(0x14, 0x28 - m23FA[1], 0);
+        t = fopMsgM_valueIncrease(0x14, 0x28 - mCornerAnimTimer[1], 0);
     }
 
     white.r = 0xFF;
@@ -1922,24 +1950,24 @@ void dMenu_Item_c::_create() {
     g_miHIO.mNo = mDoHIO_createChild("アイテム画面", &g_miHIO); // "Item Screen"
 
     for (int i = 0; i < 4; i++) {
-        ((J2DPicture*)mA18[i].pane)->append("cursor_00_02.bti", 1.0f);
-        m23C0[i] = mA18[i].mPosCenterOrig.x - m1658[0].mPosCenterOrig.x;
-        m23D0[i] = mA18[i].mPosCenterOrig.y - m1658[0].mPosCenterOrig.y;
+        ((J2DPicture*)mCursorPane[i].pane)->append("cursor_00_02.bti", 1.0f);
+        mCursorOffsetX[i] = mCursorPane[i].mPosCenterOrig.x - mItemPane[0].mPosCenterOrig.x;
+        mCursorOffsetY[i] = mCursorPane[i].mPosCenterOrig.y - mItemPane[0].mPosCenterOrig.y;
     }
     for (int i = 0; i < 15; i++) {
         ((J2DPicture*)m0B0[i].pane)->changeTexture("font_07_02.bti", 0);
         fopMsgM_blendInit(&m0B0[i], "font_00.bti");
     }
 
-    m2400[0] = 0;
-    m2400[1] = 0;
-    m2400[2] = 0;
-    m2400[0x20] = 0;
-    m2400[0x1f] = 0;
-    m2400[0x1e] = 0;
-    m2400[4] = dItemBtn_NONE_e;
-    m2400[3] = dItemBtn_NONE_e;
-    m2400[5] = dItemBtn_NONE_e;
+    mItemState[0] = 0;
+    mItemState[1] = 0;
+    mItemState[2] = 0;
+    mItemState[0x20] = 0;
+    mItemState[0x1f] = 0;
+    mItemState[0x1e] = 0;
+    mItemState[4] = dItemBtn_NONE_e;
+    mItemState[3] = dItemBtn_NONE_e;
+    mItemState[5] = dItemBtn_NONE_e;
 
     for (int i = 0; i < 0x15; i++) {
         itemCheck(i);
@@ -2033,7 +2061,7 @@ void dMenu_Item_c::_move() {
                     itemScale();
                     if (mNowItem != oldItem && oldItem == 0xc) {
                         for (int i = 0; i < 3; i++) {
-                            fopMsgM_paneTrans(&m1F88[i], 0.0f, 0.0f);
+                            fopMsgM_paneTrans(&mBowGlowPane[i], 0.0f, 0.0f);
                         }
                     }
                 }
@@ -2041,22 +2069,20 @@ void dMenu_Item_c::_move() {
         } else {
             noteAppear();
         }
-        if (m2400[4] != dItemBtn_NONE_e) {
+        if (mItemState[4] != dItemBtn_NONE_e) {
             itemMove();
         }
         if (mNowItem == 0x15) {
             itemnameMove();
-        } else if (
-            dComIfGs_getItem(mNowItem) != dItemNo_NONE_e &&
-            !(recollectBossCheck() && (dComIfGs_getItem(mNowItem) == dItemNo_WATER_BOTTLE_e || dComIfGs_getItem(mNowItem) == dItemNo_FIREFLY_BOTTLE_e ||
-                                       dComIfGs_getItem(mNowItem) == dItemNo_FOREST_WATER_e))
-        )
+        } else if (dComIfGs_getItem(mNowItem) != dItemNo_NONE_e &&
+                   !(recollectBossCheck() && (dComIfGs_getItem(mNowItem) == dItemNo_WATER_BOTTLE_e || dComIfGs_getItem(mNowItem) == dItemNo_FIREFLY_BOTTLE_e ||
+                                              dComIfGs_getItem(mNowItem) == dItemNo_FOREST_WATER_e)))
         {
             itemnameMove();
         } else {
             fopMsgM_setNowAlphaZero(&m890);
             fopMsgM_setNowAlphaZero(&m8C8);
-            fopMsgM_setNowAlphaZero(&m858);
+            fopMsgM_setNowAlphaZero(&mItemNamePane);
         }
         outFontMove();
         cursorAnime();
@@ -2072,7 +2098,7 @@ void dMenu_Item_c::_move() {
             for (int i = 0; i < 2; i++) {
                 if (mpEmitter[i] != NULL) {
                     cXyz pos;
-                    pos.set(m1658[slot].mPosCenterOrig.x - 320.0f, m1658[slot].mPosCenterOrig.y - 240.0f, 0.0f);
+                    pos.set(mItemPane[slot].mPosCenterOrig.x - 320.0f, mItemPane[slot].mPosCenterOrig.y - 240.0f, 0.0f);
                     mpEmitter[i]->setGlobalTranslation(pos);
                     mpEmitter[i]->playDrawParticle();
                     mpEmitter[i]->setGlobalAlpha(0xff);
@@ -2124,7 +2150,7 @@ void dMenu_Item_c::_draw() {
         fopMsgM_setAlpha(&m7B0);
         fopMsgM_setAlpha(&m7E8);
         fopMsgM_setAlpha(&m820);
-        outFont->setAlpha(m858.mNowAlpha);
+        outFont->setAlpha(mItemNamePane.mNowAlpha);
         fopMsgM_setAlpha(&m890);
         fopMsgM_setAlpha(&m8C8);
         fopMsgM_setAlpha(&m900);
@@ -2133,38 +2159,38 @@ void dMenu_Item_c::_draw() {
         fopMsgM_setAlpha(&m9A8);
         fopMsgM_setAlpha(&m9E0);
         for (int i = 0; i < 4; i++) {
-            fopMsgM_setAlpha(&mA18[i]);
+            fopMsgM_setAlpha(&mCursorPane[i]);
         }
         for (int i = 0; i < 8; i++) {
-            fopMsgM_setAlpha(&mAF8[i]);
-            fopMsgM_setAlpha(&mCB8[i]);
-            fopMsgM_setAlpha(&mE78[i]);
-            fopMsgM_setAlpha(&m1070[i]);
+            fopMsgM_setAlpha(&mSubItemNumOnesPane[i]);
+            fopMsgM_setAlpha(&mSubItemNumTensPane[i]);
+            fopMsgM_setAlpha(&mSubItemPane[i]);
+            fopMsgM_setAlpha(&mSubItemShadowPane[i]);
         }
-        fopMsgM_setAlpha(&m1038);
-        fopMsgM_setAlpha(&m1230);
+        fopMsgM_setAlpha(&mSubItemBackPane);
+        fopMsgM_setAlpha(&mSubItemBackShadowPane);
         for (int i = 0; i < 9; i++) {
             fopMsgM_setAlpha(&m1268[i]);
         }
         fopMsgM_setAlpha(&m1460);
-        fopMsgM_setAlpha(&m1498);
+        fopMsgM_setAlpha(&mSaveIconPane);
         fopMsgM_setAlpha(&m14D0);
         fopMsgM_setAlpha(&m1508);
-        fopMsgM_setAlpha(&m1540);
-        fopMsgM_setAlpha(&m1578);
-        fopMsgM_setAlpha(&m15B0);
-        fopMsgM_setAlpha(&m15E8);
-        fopMsgM_setAlpha(&m1620);
+        fopMsgM_setAlpha(&mPictureNumPane);
+        fopMsgM_setAlpha(&mArrowNumOnesPane);
+        fopMsgM_setAlpha(&mArrowNumTensPane);
+        fopMsgM_setAlpha(&mBombNumOnesPane);
+        fopMsgM_setAlpha(&mBombNumTensPane);
         for (int i = 0; i < 0x15; i++) {
-            fopMsgM_setAlpha(&m1658[i]);
-            fopMsgM_setAlpha(&m1AF0[i]);
+            fopMsgM_setAlpha(&mItemPane[i]);
+            fopMsgM_setAlpha(&mItemShadowPane[i]);
         }
         for (int i = 0; i < 3; i++) {
-            fopMsgM_setAlpha(&m1F88[i]);
-            fopMsgM_setAlpha(&m2030[i]);
+            fopMsgM_setAlpha(&mBowGlowPane[i]);
+            fopMsgM_setAlpha(&mCheckMarkPane[i]);
         }
         for (int i = 0; i < 6; i++) {
-            fopMsgM_setAlpha(&m20D8[i]);
+            fopMsgM_setAlpha(&mCategoryPane[i]);
         }
         fopMsgM_setAlpha(&m2228);
         fopMsgM_setAlpha(&m2260);
@@ -2178,7 +2204,7 @@ void dMenu_Item_c::_draw() {
             alphaChange(&m7B0, t);
             alphaChange(&m7E8, t);
             alphaChange(&m820, t);
-            outFont->setAlpha((f32)m858.mNowAlpha * t);
+            outFont->setAlpha((f32)mItemNamePane.mNowAlpha * t);
             alphaChange(&m890, t);
             alphaChange(&m8C8, t);
             alphaChange(&m900, t);
@@ -2188,38 +2214,38 @@ void dMenu_Item_c::_draw() {
         }
         alphaChange(&m970, t);
         for (int i = 0; i < 4; i++) {
-            alphaChange(&mA18[i], t);
+            alphaChange(&mCursorPane[i], t);
         }
         for (int i = 0; i < 8; i++) {
-            alphaChange(&mAF8[i], t);
-            alphaChange(&mCB8[i], t);
-            alphaChange(&mE78[i], t);
-            alphaChange(&m1070[i], t);
+            alphaChange(&mSubItemNumOnesPane[i], t);
+            alphaChange(&mSubItemNumTensPane[i], t);
+            alphaChange(&mSubItemPane[i], t);
+            alphaChange(&mSubItemShadowPane[i], t);
         }
-        alphaChange(&m1038, t);
-        alphaChange(&m1230, t);
+        alphaChange(&mSubItemBackPane, t);
+        alphaChange(&mSubItemBackShadowPane, t);
         for (int i = 0; i < 9; i++) {
             alphaChange(&m1268[i], t);
         }
         alphaChange(&m1460, t);
-        alphaChange(&m1498, t);
+        alphaChange(&mSaveIconPane, t);
         alphaChange(&m14D0, t);
         alphaChange(&m1508, t);
-        alphaChange(&m1540, t);
-        alphaChange(&m1578, t);
-        alphaChange(&m15B0, t);
-        alphaChange(&m15E8, t);
-        alphaChange(&m1620, t);
+        alphaChange(&mPictureNumPane, t);
+        alphaChange(&mArrowNumOnesPane, t);
+        alphaChange(&mArrowNumTensPane, t);
+        alphaChange(&mBombNumOnesPane, t);
+        alphaChange(&mBombNumTensPane, t);
         for (int i = 0; i < 0x15; i++) {
-            alphaChange(&m1658[i], t);
-            alphaChange(&m1AF0[i], t);
+            alphaChange(&mItemPane[i], t);
+            alphaChange(&mItemShadowPane[i], t);
         }
         for (int i = 0; i < 3; i++) {
-            alphaChange(&m1F88[i], t);
-            alphaChange(&m2030[i], t);
+            alphaChange(&mBowGlowPane[i], t);
+            alphaChange(&mCheckMarkPane[i], t);
         }
         for (int i = 0; i < 6; i++) {
-            alphaChange(&m20D8[i], t);
+            alphaChange(&mCategoryPane[i], t);
         }
         alphaChange(&m2228, t);
         alphaChange(&m2260, t);
@@ -2235,7 +2261,7 @@ void dMenu_Item_c::_draw() {
 
 /* 801D0F50-801D1438       .text _open__12dMenu_Item_cFv */
 bool dMenu_Item_c::_open() {
-    s16 x = g_miHIO.field_0x26;
+    s16 x = g_miHIO.mMainSlideX;
     bool ret = false;
     if (mTimer == 0) {
         for (int i = 0; i < 2; i++) {
@@ -2290,30 +2316,30 @@ inline f32 dMenu_scale(s16 a, f32 t) {
 /* 801D1438-801D1CD4       .text _close__12dMenu_Item_cFv */
 bool dMenu_Item_c::_close() {
     bool ret = false;
-    f32 dVar15;
+    f32 note_ratio;
     mTimer--;
-    f32 dVar12 = g_miHIO.field_0x26 * fopMsgM_valueIncrease(10, 10 - mTimer, 0);
-    f32 dVar13 = g_miHIO.field_0x28 * fopMsgM_valueIncrease(10, 10 - mTimer, 0);
-    f32 dVar14 = g_miHIO.field_0x2C * fopMsgM_valueIncrease(10, 10 - mTimer, 0);
-    dVar15 = fopMsgM_valueIncrease(10, 10 - mTimer, 0);
-    f32 dVar16 = fopMsgM_valueIncrease(10, mTimer, 0);
+    f32 main_offset_x = g_miHIO.mMainSlideX * fopMsgM_valueIncrease(10, 10 - mTimer, 0);
+    f32 title_offset_y = g_miHIO.mTitleSlideY * fopMsgM_valueIncrease(10, 10 - mTimer, 0);
+    f32 name_offset_y = g_miHIO.mNameSlideY * fopMsgM_valueIncrease(10, 10 - mTimer, 0);
+    note_ratio = fopMsgM_valueIncrease(10, 10 - mTimer, 0);
+    f32 emitter_alpha_ratio = fopMsgM_valueIncrease(10, mTimer, 0);
 
     for (int i = 0; i < 2; i++) {
         if (mpEmitter[i] != NULL) {
-            mpEmitter[i]->mGlobalPrmColor.a = 255.0f * dVar16;
+            mpEmitter[i]->mGlobalPrmColor.a = 255.0f * emitter_alpha_ratio;
         }
     }
 
     if (mTriggerInfo == 2) {
-        mainTrans(-dVar12, 0.0f);
-        titleTrans(0.0f, dVar13);
-        noteRotate(dMenu_scale(g_miHIO.field_0x3E, dVar15), dMenu_lerp(m820.mUserArea, g_miHIO.field_0x2A, dVar15));
-        nameTrans(0.0f, dVar14);
+        mainTrans(-main_offset_x, 0.0f);
+        titleTrans(0.0f, title_offset_y);
+        noteRotate(dMenu_scale(g_miHIO.mNoteSlideY, note_ratio), dMenu_lerp(m820.mUserArea, g_miHIO.mNoteOpenAngle, note_ratio));
+        nameTrans(0.0f, name_offset_y);
     } else if (mTriggerInfo == 1) {
-        mainTrans(dVar12, 0.0f);
-        titleTrans(0.0f, dVar13);
-        noteRotate(dMenu_scale(g_miHIO.field_0x3E, dVar15), dMenu_lerp(m820.mUserArea, g_miHIO.field_0x2A, dVar15));
-        nameTrans(0.0f, dVar14);
+        mainTrans(main_offset_x, 0.0f);
+        titleTrans(0.0f, title_offset_y);
+        noteRotate(dMenu_scale(g_miHIO.mNoteSlideY, note_ratio), dMenu_lerp(m820.mUserArea, g_miHIO.mNoteOpenAngle, note_ratio));
+        nameTrans(0.0f, name_offset_y);
     }
 
     if (mTimer > 0) {
@@ -2330,7 +2356,7 @@ bool dMenu_Item_c::_close() {
         fopMsgM_setNowAlphaZero(&m7B0);
         fopMsgM_setNowAlphaZero(&m7E8);
         fopMsgM_setNowAlphaZero(&m820);
-        fopMsgM_setNowAlphaZero(&m858);
+        fopMsgM_setNowAlphaZero(&mItemNamePane);
         fopMsgM_setNowAlphaZero(&m890);
         fopMsgM_setNowAlphaZero(&m8C8);
         fopMsgM_setNowAlphaZero(&m900);
@@ -2340,57 +2366,57 @@ bool dMenu_Item_c::_close() {
         fopMsgM_setNowAlphaZero(&m9E0);
 
         for (int i = 0; i < 4; i++) {
-            fopMsgM_setNowAlphaZero(&mA18[i]);
+            fopMsgM_setNowAlphaZero(&mCursorPane[i]);
         }
 
         for (int i = 0; i < 8; i++) {
-            fopMsgM_setNowAlphaZero(&mAF8[i]);
-            fopMsgM_setNowAlphaZero(&mCB8[i]);
-            fopMsgM_setNowAlphaZero(&mE78[i]);
-            fopMsgM_setNowAlphaZero(&m1070[i]);
+            fopMsgM_setNowAlphaZero(&mSubItemNumOnesPane[i]);
+            fopMsgM_setNowAlphaZero(&mSubItemNumTensPane[i]);
+            fopMsgM_setNowAlphaZero(&mSubItemPane[i]);
+            fopMsgM_setNowAlphaZero(&mSubItemShadowPane[i]);
         }
-        fopMsgM_setNowAlphaZero(&m1038);
-        fopMsgM_setNowAlphaZero(&m1230);
+        fopMsgM_setNowAlphaZero(&mSubItemBackPane);
+        fopMsgM_setNowAlphaZero(&mSubItemBackShadowPane);
 
         for (int i = 0; i < 9; i++) {
             fopMsgM_setNowAlphaZero(&m1268[i]);
         }
         fopMsgM_setNowAlphaZero(&m1460);
-        fopMsgM_setNowAlphaZero(&m1498);
+        fopMsgM_setNowAlphaZero(&mSaveIconPane);
         fopMsgM_setNowAlphaZero(&m14D0);
         fopMsgM_setNowAlphaZero(&m1508);
-        fopMsgM_setNowAlphaZero(&m1540);
-        fopMsgM_setNowAlphaZero(&m1578);
-        fopMsgM_setNowAlphaZero(&m15B0);
-        fopMsgM_setNowAlphaZero(&m15E8);
-        fopMsgM_setNowAlphaZero(&m1620);
+        fopMsgM_setNowAlphaZero(&mPictureNumPane);
+        fopMsgM_setNowAlphaZero(&mArrowNumOnesPane);
+        fopMsgM_setNowAlphaZero(&mArrowNumTensPane);
+        fopMsgM_setNowAlphaZero(&mBombNumOnesPane);
+        fopMsgM_setNowAlphaZero(&mBombNumTensPane);
 
         for (int i = 0; i < 0x15; i++) {
-            fopMsgM_setNowAlphaZero(&m1658[i]);
-            fopMsgM_setNowAlphaZero(&m1AF0[i]);
+            fopMsgM_setNowAlphaZero(&mItemPane[i]);
+            fopMsgM_setNowAlphaZero(&mItemShadowPane[i]);
         }
 
         for (int i = 0; i < 3; i++) {
-            fopMsgM_setNowAlphaZero(&m2030[i]);
+            fopMsgM_setNowAlphaZero(&mCheckMarkPane[i]);
         }
 
         for (int i = 0; i < 6; i++) {
-            fopMsgM_setNowAlphaZero(&m20D8[i]);
+            fopMsgM_setNowAlphaZero(&mCategoryPane[i]);
         }
         fopMsgM_setNowAlphaZero(&m2228);
         fopMsgM_setNowAlphaZero(&m2260);
         fopMsgM_setNowAlphaZero(&m2298);
         fopMsgM_setNowAlphaZero(&m22D0);
 
-        if (m2400[4] != 3) {
-            dComIfGs_setSelectItem(m2400[4], m2400[1]);
-            dComIfGp_setSelectItem(m2400[4]);
-            m2400[4] = 3;
+        if (mItemState[4] != 3) {
+            dComIfGs_setSelectItem(mItemState[4], mItemState[1]);
+            dComIfGp_setSelectItem(mItemState[4]);
+            mItemState[4] = 3;
 
-            if (m2400[3] != 3) {
-                dComIfGs_setSelectItem(m2400[3], m2400[2]);
-                dComIfGp_setSelectItem(m2400[3]);
-                m2400[3] = 3;
+            if (mItemState[3] != 3) {
+                dComIfGs_setSelectItem(mItemState[3], mItemState[2]);
+                dComIfGp_setSelectItem(mItemState[3]);
+                mItemState[3] = 3;
             }
 
             JAIZelBasic::zel_basic->seStart(0x817, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
@@ -2406,7 +2432,7 @@ bool dMenu_Item_c::_close() {
 
 /* 801D1CD4-801D21A0       .text _open2__12dMenu_Item_cFv */
 bool dMenu_Item_c::_open2() {
-    s16 x = g_miHIO.field_0x26;
+    s16 x = g_miHIO.mMainSlideX;
     s16 v = g_menuHIO.field_0x92 + 0;
     bool ret = false;
     if (mTimer == 0) {
@@ -2436,7 +2462,7 @@ bool dMenu_Item_c::_open2() {
     mTimer = mTimer + 1;
     if (mTimer <= v && mTimer > 0) {
         if (mTriggerInfo == 2) {
-            mainOpenProc(mTimer, v + 0, (s16)x +0);
+            mainOpenProc(mTimer, v + 0, (s16)x + 0);
         } else {
             mainOpenProc(mTimer, v + 0, (s16)(-x));
         }
@@ -2453,30 +2479,30 @@ bool dMenu_Item_c::_open2() {
 /* 801D21A0-801D2A4C       .text _close2__12dMenu_Item_cFv */
 bool dMenu_Item_c::_close2() {
     bool ret = false;
-    f32 dVar15;
+    f32 note_ratio;
     mTimer--;
-    f32 dVar12 = g_miHIO.field_0x26 * fopMsgM_valueIncrease(g_menuHIO.field_0x92, g_menuHIO.field_0x92 - mTimer, 0);
-    f32 dVar13 = g_miHIO.field_0x28 * fopMsgM_valueIncrease(g_menuHIO.field_0x92, g_menuHIO.field_0x92 - mTimer, 0);
-    f32 dVar14 = g_miHIO.field_0x2C * fopMsgM_valueIncrease(g_menuHIO.field_0x92, g_menuHIO.field_0x92 - mTimer, 0);
-    dVar15 = fopMsgM_valueIncrease(g_menuHIO.field_0x92, g_menuHIO.field_0x92 - mTimer, 0);
-    f32 dVar16 = fopMsgM_valueIncrease(g_menuHIO.field_0x92, mTimer, 0);
+    f32 main_offset_x = g_miHIO.mMainSlideX * fopMsgM_valueIncrease(g_menuHIO.field_0x92, g_menuHIO.field_0x92 - mTimer, 0);
+    f32 title_offset_y = g_miHIO.mTitleSlideY * fopMsgM_valueIncrease(g_menuHIO.field_0x92, g_menuHIO.field_0x92 - mTimer, 0);
+    f32 name_offset_y = g_miHIO.mNameSlideY * fopMsgM_valueIncrease(g_menuHIO.field_0x92, g_menuHIO.field_0x92 - mTimer, 0);
+    note_ratio = fopMsgM_valueIncrease(g_menuHIO.field_0x92, g_menuHIO.field_0x92 - mTimer, 0);
+    f32 emitter_alpha_ratio = fopMsgM_valueIncrease(g_menuHIO.field_0x92, mTimer, 0);
 
     for (int i = 0; i < 2; i++) {
         if (mpEmitter[i] != NULL) {
-            mpEmitter[i]->mGlobalPrmColor.a = 255.0f * dVar16;
+            mpEmitter[i]->mGlobalPrmColor.a = 255.0f * emitter_alpha_ratio;
         }
     }
 
     if (mTriggerInfo == 2) {
-        mainTrans(-dVar12, 0.0f);
-        titleTrans(0.0f, dVar13);
-        noteRotate(dMenu_scale(g_miHIO.field_0x3E, dVar15), dMenu_lerp(m820.mUserArea, g_miHIO.field_0x2A, dVar15));
-        nameTrans(0.0f, dVar14);
+        mainTrans(-main_offset_x, 0.0f);
+        titleTrans(0.0f, title_offset_y);
+        noteRotate(dMenu_scale(g_miHIO.mNoteSlideY, note_ratio), dMenu_lerp(m820.mUserArea, g_miHIO.mNoteOpenAngle, note_ratio));
+        nameTrans(0.0f, name_offset_y);
     } else if (mTriggerInfo == 1) {
-        mainTrans(dVar12, 0.0f);
-        titleTrans(0.0f, dVar13);
-        noteRotate(dMenu_scale(g_miHIO.field_0x3E, dVar15), dMenu_lerp(m820.mUserArea, g_miHIO.field_0x2A, dVar15));
-        nameTrans(0.0f, dVar14);
+        mainTrans(main_offset_x, 0.0f);
+        titleTrans(0.0f, title_offset_y);
+        noteRotate(dMenu_scale(g_miHIO.mNoteSlideY, note_ratio), dMenu_lerp(m820.mUserArea, g_miHIO.mNoteOpenAngle, note_ratio));
+        nameTrans(0.0f, name_offset_y);
     }
 
     if (mTimer > 0) {
@@ -2493,7 +2519,7 @@ bool dMenu_Item_c::_close2() {
         fopMsgM_setNowAlphaZero(&m7B0);
         fopMsgM_setNowAlphaZero(&m7E8);
         fopMsgM_setNowAlphaZero(&m820);
-        fopMsgM_setNowAlphaZero(&m858);
+        fopMsgM_setNowAlphaZero(&mItemNamePane);
         fopMsgM_setNowAlphaZero(&m890);
         fopMsgM_setNowAlphaZero(&m8C8);
         fopMsgM_setNowAlphaZero(&m900);
@@ -2503,58 +2529,58 @@ bool dMenu_Item_c::_close2() {
         fopMsgM_setNowAlphaZero(&m9E0);
 
         for (int i = 0; i < 4; i++) {
-            fopMsgM_setNowAlphaZero(&mA18[i]);
+            fopMsgM_setNowAlphaZero(&mCursorPane[i]);
         }
 
         for (int i = 0; i < 8; i++) {
-            fopMsgM_setNowAlphaZero(&mAF8[i]);
-            fopMsgM_setNowAlphaZero(&mCB8[i]);
-            fopMsgM_setNowAlphaZero(&mE78[i]);
-            fopMsgM_setNowAlphaZero(&m1070[i]);
+            fopMsgM_setNowAlphaZero(&mSubItemNumOnesPane[i]);
+            fopMsgM_setNowAlphaZero(&mSubItemNumTensPane[i]);
+            fopMsgM_setNowAlphaZero(&mSubItemPane[i]);
+            fopMsgM_setNowAlphaZero(&mSubItemShadowPane[i]);
         }
-        fopMsgM_setNowAlphaZero(&m1038);
-        fopMsgM_setNowAlphaZero(&m1230);
+        fopMsgM_setNowAlphaZero(&mSubItemBackPane);
+        fopMsgM_setNowAlphaZero(&mSubItemBackShadowPane);
 
         for (int i = 0; i < 9; i++) {
             fopMsgM_setNowAlphaZero(&m1268[i]);
         }
         fopMsgM_setNowAlphaZero(&m1460);
-        fopMsgM_setNowAlphaZero(&m1498);
+        fopMsgM_setNowAlphaZero(&mSaveIconPane);
         fopMsgM_setNowAlphaZero(&m14D0);
         fopMsgM_setNowAlphaZero(&m1508);
-        fopMsgM_setNowAlphaZero(&m1540);
-        fopMsgM_setNowAlphaZero(&m1578);
-        fopMsgM_setNowAlphaZero(&m15B0);
-        fopMsgM_setNowAlphaZero(&m15E8);
-        fopMsgM_setNowAlphaZero(&m1620);
+        fopMsgM_setNowAlphaZero(&mPictureNumPane);
+        fopMsgM_setNowAlphaZero(&mArrowNumOnesPane);
+        fopMsgM_setNowAlphaZero(&mArrowNumTensPane);
+        fopMsgM_setNowAlphaZero(&mBombNumOnesPane);
+        fopMsgM_setNowAlphaZero(&mBombNumTensPane);
 
         for (int i = 0; i < 0x15; i++) {
-            fopMsgM_setNowAlphaZero(&m1658[i]);
-            fopMsgM_setNowAlphaZero(&m1AF0[i]);
+            fopMsgM_setNowAlphaZero(&mItemPane[i]);
+            fopMsgM_setNowAlphaZero(&mItemShadowPane[i]);
         }
 
         for (int i = 0; i < 3; i++) {
-            fopMsgM_setNowAlphaZero(&m1F88[i]);
-            fopMsgM_setNowAlphaZero(&m2030[i]);
+            fopMsgM_setNowAlphaZero(&mBowGlowPane[i]);
+            fopMsgM_setNowAlphaZero(&mCheckMarkPane[i]);
         }
 
         for (int i = 0; i < 6; i++) {
-            fopMsgM_setNowAlphaZero(&m20D8[i]);
+            fopMsgM_setNowAlphaZero(&mCategoryPane[i]);
         }
         fopMsgM_setNowAlphaZero(&m2228);
         fopMsgM_setNowAlphaZero(&m2260);
         fopMsgM_setNowAlphaZero(&m2298);
         fopMsgM_setNowAlphaZero(&m22D0);
 
-        if (m2400[4] != 3) {
-            dComIfGs_setSelectItem(m2400[4], m2400[1]);
-            dComIfGp_setSelectItem(m2400[4]);
-            m2400[4] = 3;
+        if (mItemState[4] != 3) {
+            dComIfGs_setSelectItem(mItemState[4], mItemState[1]);
+            dComIfGp_setSelectItem(mItemState[4]);
+            mItemState[4] = 3;
 
-            if (m2400[3] != 3) {
-                dComIfGs_setSelectItem(m2400[3], m2400[2]);
-                dComIfGp_setSelectItem(m2400[3]);
-                m2400[3] = 3;
+            if (mItemState[3] != 3) {
+                dComIfGs_setSelectItem(mItemState[3], mItemState[2]);
+                dComIfGp_setSelectItem(mItemState[3]);
+                mItemState[3] = 3;
             }
 
             JAIZelBasic::zel_basic->seStart(0x817, (cXyz*)0x0, 0, 0, 1.0, 1.0, -1.0, -1.0, 0);
@@ -2567,3 +2593,11 @@ bool dMenu_Item_c::_close2() {
 
     return ret;
 }
+
+/* 801D2A4C-801D2AE4       .text draw__12dMenu_Item_cFv */
+void dMenu_Item_c::draw() {
+    _draw();
+}
+
+/* 801D2AE4-801D2B48       .text __dt__9dMi_HIO_cFv */
+dMi_HIO_c::~dMi_HIO_c() {}
