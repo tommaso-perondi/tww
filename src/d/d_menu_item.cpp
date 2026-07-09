@@ -104,8 +104,6 @@ void dMenu_Item_c::initialize() {
 
 /* 801C7DC4-801C8724       .text screenSet__12dMenu_Item_cFv */
 void dMenu_Item_c::screenSet() {
-    // Declaration order must match .rodata layout: l_ft, l_no, l_car, l_sin_01,
-    // l_sin_10, l_sit, l_sik, l_sb, l_it, l_ik, l_ip, l_fd.
     static const u32 l_ft[15] = {
         'ft00',
         'ft01',
@@ -123,7 +121,6 @@ void dMenu_Item_c::screenSet() {
         'ft13',
         'ft14',
     };
-    // Unused in this function, but present in the original data layout.
     static const u32 l_no[6] = {
         'no23',
         'no13',
@@ -433,7 +430,6 @@ void dMenu_Item_c::cursorAnime() {
 
 /* 801C8B14-801C8CA0       .text cursorMainMove__12dMenu_Item_cFv */
 void dMenu_Item_c::cursorMainMove() {
-    /* Nonmatching */
     u8 old_item;
     u8 item_no;
     bool triggered;
@@ -604,7 +600,6 @@ void dMenu_Item_c::checkMove() {
 
 /* 801C9124-801C95FC       .text itemplaceCheck__12dMenu_Item_cFi */
 bool dMenu_Item_c::itemplaceCheck(int i_no) {
-    // Declaration order matters: event, attack, bottle, bag, wepon1, wepon2.
     static const int event[4] = {0, 1, 2, 3};
     static const int attack[4] = {7, 8, 9, 10};
     static const int bottle[4] = {0xe, 0xf, 0x10, 0x11};
@@ -1053,6 +1048,7 @@ void dMenu_Item_c::itemnameMove() {
 
 /* 801CB168-801CB7C0       .text itemnameSet__12dMenu_Item_cFv */
 void dMenu_Item_c::itemnameSet() {
+    /* Nonmatching */
     fopMsgM_itemMsgGet_c msgGet;
     int i = 0;
     J2DTextBox::TFontSize size2;
@@ -1109,21 +1105,22 @@ void dMenu_Item_c::itemnameSet() {
             buf[2] = '\0';
             buf[1] = '\0';
             buf[0] = '\0';
-            if (*(u8*)p == 0x1a) {
+            u8 byte = *(u8*)p;
+            if (byte == 0x1a) {
                 p += 1;
                 p += (s8)*p - 1;
                 continue;
             }
             int code;
-            if ((*(u8*)p >> 4) == 8 || (*(u8*)p >> 4) == 9) {
+            if ((byte >> 4) == 8 || (byte >> 4) == 9) {
                 code = ((u8)p[0] << 8) | (u8)p[1];
                 buf[0] = p[0];
                 buf[1] = p[1];
                 buf[2] = '\0';
                 p += 2;
             } else {
-                code = (u8)p[0];
-                buf[0] = code;
+                code = byte;
+                buf[0] = byte;
                 buf[1] = '\0';
                 p += 1;
             }
@@ -1345,7 +1342,6 @@ void dMenu_Item_c::noteAppear() {
 
 /* 801CC278-801CC4F8       .text noteOpen__12dMenu_Item_cFv */
 void dMenu_Item_c::noteOpen() {
-    /* Nonmatching */
     f32 ratio;
     f32 tmp_ratio;
 
@@ -1382,7 +1378,6 @@ void dMenu_Item_c::noteOpen() {
 
 /* 801CC4F8-801CC7D4       .text noteClose__12dMenu_Item_cFv */
 void dMenu_Item_c::noteClose() {
-    /* Nonmatching */
     s16 open_final_angle = (int)g_miHIO.mNoteOpenFinalAngle;
     s16 close_final_angle = (int)g_miHIO.mNoteCloseAngle;
     s16 open_total = (s16)(g_miHIO.mNoteOpenDuration + g_miHIO.mNoteHoldDuration);
@@ -1456,7 +1451,6 @@ void dMenu_Item_c::mainTrans(f32 x, f32 y) {
 
 /* 801CC9D8-801CC9FC       .text titleTrans__12dMenu_Item_cFff */
 void dMenu_Item_c::titleTrans(f32 x, f32 y) {
-    /* Nonmatching */
     fopMsgM_paneTrans(&this->m9E0, x, y);
 }
 
@@ -1524,7 +1518,7 @@ void dMenu_Item_c::mainOpenProc(s16 i_timer, s16 i_total, s16 i_xAmount) {
 /* 801CCD74-801CCE5C       .text titleOpenProc__12dMenu_Item_cFss */
 void dMenu_Item_c::titleOpenProc(s16 i_timer, s16 i_total) {
     /* Nonmatching */
-    s16 slide_amount = g_miHIO.mTitleSlideY + 0;
+    s16 slide_amount = g_miHIO.mTitleSlideY;
     if (i_total >= i_timer) {
         fopMsgM_valueIncrease(i_total, i_timer, 0);
         titleTrans(0.0f, slide_amount * fopMsgM_valueIncrease(i_total, i_total - i_timer, 0));
@@ -1538,7 +1532,6 @@ void dMenu_Item_c::titleOpenProc(s16 i_timer, s16 i_total) {
 
 /* 801CCE5C-801CCF50       .text noteOpenProc__12dMenu_Item_cFss */
 void dMenu_Item_c::noteOpenProc(s16 i_timer, s16 i_total) {
-    /* Nonmatching */
     int target_angle;
     int slide_amount;
     f32 ratio;
@@ -1558,7 +1551,8 @@ void dMenu_Item_c::noteOpenProc(s16 i_timer, s16 i_total) {
 
 /* 801CCF50-801CD004       .text nameOpenProc__12dMenu_Item_cFss */
 void dMenu_Item_c::nameOpenProc(s16 i_timer, s16 i_total) {
-    s16 slide_amount = g_miHIO.mNameSlideY + 0;
+    /* Nonmatching */
+    s16 slide_amount = g_miHIO.mNameSlideY;
     if (i_total >= i_timer) {
         fopMsgM_valueIncrease(i_total, i_timer, 0);
         nameTrans(0.0f, slide_amount * fopMsgM_valueIncrease(i_total, i_total - i_timer, 0));
@@ -1570,6 +1564,7 @@ void dMenu_Item_c::nameOpenProc(s16 i_timer, s16 i_total) {
 
 /* 801CD004-801CD04C       .text numberSet__12dMenu_Item_cFP7J2DPaneUc */
 void dMenu_Item_c::numberSet(J2DPane* pane, u8 num) {
+    /* Nonmatching */
     static char* number[10] = {
         "count_num_0.bti",
         "count_num_1.bti",
@@ -1727,7 +1722,6 @@ void dMenu_Item_c::itemCheck(int i_no) {
 
 /* 801CDA14-801CDB14       .text itemBitCheck__12dMenu_Item_cFb */
 void dMenu_Item_c::itemBitCheck(bool i_force) {
-    /* Nonmatching */
     u8 item_no;
     dSv_player_item_c* item_ptr;
     int i = 0;
@@ -1743,7 +1737,6 @@ void dMenu_Item_c::itemBitCheck(bool i_force) {
 
 /* 801CDB14-801CDC34       .text arrowLightAnime__12dMenu_Item_cFv */
 void dMenu_Item_c::arrowLightAnime() {
-    /* Nonmatching */
     this->mBowGlowPane[0].mUserArea++;
     if (this->mBowGlowPane[0].mUserArea >= 0x78) {
         this->mBowGlowPane[0].mUserArea = 0;
@@ -1766,7 +1759,6 @@ void dMenu_Item_c::arrowLightAnime() {
 
 /* 801CDC34-801CDCF0       .text bottleFwaterCheck__12dMenu_Item_cFv */
 int dMenu_Item_c::bottleFwaterCheck() {
-    /* Nonmatching */
     for (int i = 0; i < dInvSlot_BOTTLE_COUNT_e; i++) {
         int slot = dInvSlot_BOTTLE0_e + i;
         if (dComIfGs_getItem(slot) == dItemNo_FOREST_WATER_e) {
@@ -1778,7 +1770,6 @@ int dMenu_Item_c::bottleFwaterCheck() {
 
 /* 801CDCF0-801CDDC0       .text recollectBossCheck__12dMenu_Item_cFv */
 BOOL dMenu_Item_c::recollectBossCheck() {
-    /* Nonmatching */
 
     if (dStage_stagInfo_GetSTType(dComIfGp_getStageStagInfo()) == dStageType_BOSS_e) {
         const char* name = dComIfGp_getStartStageName();
@@ -1891,7 +1882,6 @@ void dMenu_Item_c::cornerMove() {
 
 /* 801CF08C-801CF12C       .text equipBeastItem__12dMenu_Item_cFi */
 int dMenu_Item_c::equipBeastItem(int i_no) {
-    /* Nonmatching */
     u8 item = dComIfGs_getItemBeast(i_no);
     u8 idx = 0;
     switch (item) {
@@ -2261,6 +2251,7 @@ void dMenu_Item_c::_draw() {
 
 /* 801D0F50-801D1438       .text _open__12dMenu_Item_cFv */
 bool dMenu_Item_c::_open() {
+    /* Nonmatching */
     s16 x = g_miHIO.mMainSlideX;
     bool ret = false;
     if (mTimer == 0) {
@@ -2432,8 +2423,9 @@ bool dMenu_Item_c::_close() {
 
 /* 801D1CD4-801D21A0       .text _open2__12dMenu_Item_cFv */
 bool dMenu_Item_c::_open2() {
+    /* Nonmatching */
     s16 x = g_miHIO.mMainSlideX;
-    s16 v = g_menuHIO.field_0x92 + 0;
+    s16 v = g_menuHIO.field_0x92;
     bool ret = false;
     if (mTimer == 0) {
         for (int i = 0; i < 2; i++) {
@@ -2462,13 +2454,13 @@ bool dMenu_Item_c::_open2() {
     mTimer = mTimer + 1;
     if (mTimer <= v && mTimer > 0) {
         if (mTriggerInfo == 2) {
-            mainOpenProc(mTimer, v + 0, (s16)x + 0);
+            mainOpenProc(mTimer, v, x);
         } else {
-            mainOpenProc(mTimer, v + 0, (s16)(-x));
+            mainOpenProc(mTimer, v, -x);
         }
-        titleOpenProc(mTimer, v + 0);
-        noteOpenProc(mTimer, v + 0);
-        nameOpenProc(mTimer, v + 0);
+        titleOpenProc(mTimer, v);
+        noteOpenProc(mTimer, v);
+        nameOpenProc(mTimer, v);
     }
     if (mTimer >= v) {
         ret = true;
@@ -2594,10 +2586,10 @@ bool dMenu_Item_c::_close2() {
     return ret;
 }
 
-/* 801D2A4C-801D2AE4       .text draw__12dMenu_Item_cFv */
+/* 801D2A4C-801D2AB8       .text __dt__12dMenu_Item_cFv */
+dMenu_Item_c::~dMenu_Item_c() {}
+
+/* 801D2AB8-801D2AE4       .text draw__12dMenu_Item_cFv */
 void dMenu_Item_c::draw() {
     _draw();
 }
-
-/* 801D2AE4-801D2B48       .text __dt__9dMi_HIO_cFv */
-dMi_HIO_c::~dMi_HIO_c() {}

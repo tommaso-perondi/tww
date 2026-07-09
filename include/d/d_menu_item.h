@@ -17,6 +17,7 @@ class dMenu_save_c;
 
 class dMenu_Item_c : public dMenu_base_c {
 public:
+    virtual ~dMenu_Item_c();
     void alphaChange(fopMsgM_pane_class* i_pane, f32 t) {
         i_pane->pane->mAlpha = (f32)i_pane->mNowAlpha * t;
     }
@@ -174,7 +175,7 @@ STATIC_ASSERT(sizeof(dMenu_Item_c) == 0x2424);
 class dMi_HIO_c : public JORReflexible {
 public:
     dMi_HIO_c();
-    virtual ~dMi_HIO_c();
+    virtual ~dMi_HIO_c() {}
 
     void genMessage(JORMContext* ctx) {}
 
